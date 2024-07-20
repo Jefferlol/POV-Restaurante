@@ -9,6 +9,16 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.table.JTableHeader;
 
+//Imports del sql
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+//
+
 public class Menu extends JFrame {
     private JPanel panel_opciones;
     private JPanel panel_pedidos;
@@ -27,6 +37,15 @@ public class Menu extends JFrame {
     private int mesaCounter = 1; // Contador de mesas
     private JComboBox<String> mesasComboBox; // ComboBox para mostrar mesas atendidas
 
+    //Base de Datos
+    
+    private static final String URL = "jdbc:oracle:thin:@localhost:1521:XE"; 
+    private static final String USER = "C##Jefferson"; 
+    private static final String PASSWORD = "Jefferson"; 
+    
+    
+    
+    
     public Menu() {
         initComponents();
     }
@@ -203,11 +222,13 @@ public class Menu extends JFrame {
         add(categoriaLabel);
         categoriaLabel.setBounds(760, 40, 230, 30);
 
-        // Botones de categorías
-        String[] productos = {
-                "Hamburguesa", "Salchipapa", "Alitas", "Piqueos", "Postres",
-                "Gaseosa", "Refrescos", "Cerveza", "Cigarros", "Cocteles", "Pack de bebidas"
-        };
+        
+        //Ejecucion de extraer categorias de la base de datos
+        String Consulta_Categorias = "SELECT categoria_nom FROM categorias";
+        String Parte_Categoria = "Categoria_nom";
+        String[] productos = BaseDatos(Consulta_Categorias,Parte_Categoria);
+        
+        
 
         int yPosition = 80;
         for (String producto : productos) {
@@ -333,106 +354,30 @@ public class Menu extends JFrame {
 
     private String[] getOpciones(String categoria) {
         // Aquí defines las opciones por categoría
-        switch (categoria) {
-            case "Hamburguesa":
-                return new String[]{"Hamburguesa Simple", "Hamburguesa Doble", "Hamburguesa Triple"};
-            case "Salchipapa":
-                return new String[]{"Salchipapa Clásica", "Salchipapa Especial", "Salchipapa Super"};
-            case "Alitas":
-                return new String[]{"Alitas BBQ", "Alitas Picantes", "Alitas Miel Mostaza"};
-            case "Piqueos":
-                return new String[]{"Tequeños", "Papas Fritas", "Yuca Frita"};
-            case "Postres":
-                return new String[]{"Cheesecake", "Brownie", "Helado"};
-            case "Gaseosa":
-                return new String[]{"Coca Cola", "Pepsi", "Fanta"};
-            case "Refrescos":
-                return new String[]{"Limonada", "Chicha Morada", "Maracuyá"};
-            case "Cerveza":
-                return new String[]{"Cerveza Rubia", "Cerveza Negra", "Cerveza Roja"};
-            case "Cigarros":
-                return new String[]{"Marlboro", "Lucky Strike", "Winston"};
-            case "Cocteles":
-                return new String[]{"Pisco Sour", "Mojito", "Margarita"};
-            case "Pack de bebidas":
-                return new String[]{"Pack 6 cervezas", "Pack 12 cervezas", "Pack 24 cervezas"};
-            default:
-                return new String[0];
-        }
-    }
 
+
+        String[] id_Categoria = BaseDatos("select categoria_id from categorias where categoria_nom = '"+categoria+"'","categoria_id");
+        String[] array_MostrarProductos = BaseDatos("select producto_nom from productos where categoria_id = '"+id_Categoria[0]+"'","producto_nom");
+        return array_MostrarProductos;
+            
+        }
+    
+    
     private String getPrecio(String pedido) {
         // Aquí defines el precio por producto
-        switch (pedido) {
-            case "Hamburguesa Simple":
-                return "10.00";
-            case "Hamburguesa Doble":
-                return "15.00";
-            case "Hamburguesa Triple":
-                return "20.00";
-            case "Salchipapa Clásica":
-                return "8.00";
-            case "Salchipapa Especial":
-                return "12.00";
-            case "Salchipapa Super":
-                return "16.00";
-            case "Alitas BBQ":
-                return "18.00";
-            case "Alitas Picantes":
-                return "18.00";
-            case "Alitas Miel Mostaza":
-                return "18.00";
-            case "Tequeños":
-                return "12.00";
-            case "Papas Fritas":
-                return "6.00";
-            case "Yuca Frita":
-                return "6.00";
-            case "Cheesecake":
-                return "10.00";
-            case "Brownie":
-                return "8.00";
-            case "Helado":
-                return "5.00";
-            case "Coca Cola":
-                return "3.00";
-            case "Pepsi":
-                return "3.00";
-            case "Fanta":
-                return "3.00";
-            case "Limonada":
-                return "5.00";
-            case "Chicha Morada":
-                return "5.00";
-            case "Maracuyá":
-                return "5.00";
-            case "Cerveza Rubia":
-                return "7.00";
-            case "Cerveza Negra":
-                return "8.00";
-            case "Cerveza Roja":
-                return "8.00";
-            case "Marlboro":
-                return "10.00";
-            case "Lucky Strike":
-                return "9.00";
-            case "Winston":
-                return "8.00";
-            case "Pisco Sour":
-                return "12.00";
-            case "Mojito":
-                return "15.00";
-            case "Margarita":
-                return "15.00";
-            case "Pack 6 cervezas":
-                return "40.00";
-            case "Pack 12 cervezas":
-                return "75.00";
-            case "Pack 24 cervezas":
-                return "140.00";
-            default:
-                return "0.00";
+        String[] TodoProductos = BaseDatos("select producto_nom from productos","producto_nom");
+
+        for (String item : TodoProductos)
+        {
+            if (pedido.equals(item)){
+                
+            String[] PrecioProducto = BaseDatos("select Precio from productos where Producto_nom = '"+item+"'","Precio");
+            String precio_Str = PrecioProducto[0];
+            return precio_Str;}
         }
+        
+        return "0.01";
+        
     }
 
     
@@ -551,8 +496,54 @@ public class Menu extends JFrame {
             payButton.setText("Baucher: S/. " + total);
         }
     }
+    public static String[] BaseDatos(String Sentencia, String ParteTabla) {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        List<String> List_Momentania = new ArrayList<>();
+        
+        try {
+            // Cargar el driver JDBC
+            Class.forName("oracle.jdbc.driver.OracleDriver");
+            
+            // Establecer la conexión
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            
+            // Crear un statement
+            stmt = conn.createStatement();
+            
+            // Ejecutar la consulta
+            rs = stmt.executeQuery(Sentencia);
+            
+            // Procesar los resultados
+            while (rs.next()) {
+                String Cate = rs.getString(ParteTabla);
+                List_Momentania.add(Cate);
+            }
+            
+            // Convertir la lista en un array
+            return List_Momentania.toArray(new String[0]);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Cerrar los recursos
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        // Retornar null si ocurrió algún error
+        return null;
+    }
 
     public static void main(String[] args) {
+        
         EventQueue.invokeLater(() -> {
             new Menu().setVisible(true);
         });
