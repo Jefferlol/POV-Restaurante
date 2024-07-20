@@ -1,9 +1,0 @@
-
-2024/07/18 00:33:08
-Piqueo 1	18.00
-Piqueo 2	20.00
-Piqueo 2	20.00
-Piqueo 2	20.00
-Piqueo 2	20.00
-Piqueo 2	20.00
-Total: S/. 118.0
