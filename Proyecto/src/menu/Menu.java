@@ -54,9 +54,10 @@ public class Menu extends JFrame {
         inventarioFrame.setSize(1020, 580);
         inventarioFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         inventarioFrame.setLayout(new BorderLayout());
-
+        
         // Crear el modelo de tabla para el inventario
-        String[] columnNames = {"Producto", "Cantidad", "Precio"};
+        String[] columnNames = {"ID","Producto", "Cantidad", "Precio"};
+        
         DefaultTableModel inventarioTableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -70,7 +71,21 @@ public class Menu extends JFrame {
         inventarioTable.setRowHeight(30);
         JScrollPane scrollPane = new JScrollPane(inventarioTable);
         inventarioFrame.add(scrollPane, BorderLayout.CENTER);
-
+        //
+        //OBtener datos de la tabla Inventario Fijo
+        String[] ID_inventario_Nofijo = BaseDatos("SELECT i.Inv_Fijo_id FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id ","inv_fijo_id");
+        String[] NomProducto_Nofijo = BaseDatos("SELECT p.Producto_nom FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id ","producto_nom");
+        String[] Stock_Nofijo = BaseDatos("SELECT i.Stock_Disponible FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id ","Stock_Disponible");
+        String[] Precio_Nofijo = BaseDatos("SELECT p.Precio FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id","Precio");
+        
+        for (int i = 0; i<NomProducto_Nofijo.length;i++)
+        {
+            //Añade cada fila de al tablero desde los datos de la tabla inv_fijo
+            inventarioTableModel.addRow(new Object[]{ID_inventario_Nofijo[i], NomProducto_Nofijo[i],Stock_Nofijo[i] ,Precio_Nofijo[i]});
+        }
+        
+        
+        
         // Crear panel para los botones
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -81,10 +96,12 @@ public class Menu extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Aquí puedes implementar la funcionalidad para agregar un nuevo producto
+                String ID_inventario = JOptionPane.showInputDialog(inventarioFrame, "Ingrese el ID:");
                 String producto = JOptionPane.showInputDialog(inventarioFrame, "Ingrese el nombre del producto:");
                 String cantidadStr = JOptionPane.showInputDialog(inventarioFrame, "Ingrese la cantidad:");
                 String precioStr = JOptionPane.showInputDialog(inventarioFrame, "Ingrese el precio:");
-
+                
+                
                 if (producto != null && cantidadStr != null && precioStr != null) {
                     try {
                         int cantidad = Integer.parseInt(cantidadStr);
@@ -542,6 +559,35 @@ public class Menu extends JFrame {
         return null;
     }
 
+    public static void IngresarDatos(String sql) throws SQLException {
+        Connection conexion = null;
+        Statement statement = null;
+        try {
+            conexion = DriverManager.getConnection(URL, USER, PASSWORD);
+            statement = conexion.createStatement();
+            int filasAfectadas = statement.executeUpdate(sql);
+            System.out.println("Filas afectadas: " + filasAfectadas);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (conexion != null) {
+                try {
+                    conexion.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
     public static void main(String[] args) {
         
         EventQueue.invokeLater(() -> {
