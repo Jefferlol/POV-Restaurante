@@ -1,5 +1,0 @@
-Pedidos:
-Producto: Lucky Strike, Precio: 8.00
-Producto: Malboro, Precio: 8.00
-Producto: Malboro, Precio: 8.00
-Producto: Malboro, Precio: 8.00

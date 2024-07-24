@@ -1,4 +1,5 @@
 package menu;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -8,6 +9,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.table.JTableHeader;
+
+//reloj
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 //Imports del sql
 import java.sql.Connection;
@@ -20,6 +25,7 @@ import java.util.List;
 //
 
 public class Menu extends JFrame {
+
     private JPanel panel_opciones;
     private JPanel panel_pedidos;
     private JButton texto_Categoria;
@@ -36,28 +42,28 @@ public class Menu extends JFrame {
     private Map<String, ArrayList<String[]>> clientesAtendidos = new HashMap<>(); // Map para almacenar los pedidos por mesa
     private int mesaCounter = 1; // Contador de mesas
     private JComboBox<String> mesasComboBox; // ComboBox para mostrar mesas atendidas
+    //reloj 
+    private JLabel relojLabel;
+    private SimpleDateFormat formatoHora;
 
     //Base de Datos
-    
-    private static final String URL = "jdbc:oracle:thin:@localhost:1521:XE"; 
-    private static final String USER = "C##Jefferson"; 
-    private static final String PASSWORD = "Jefferson"; 
-    
-    
-    
-    
+    private static final String URL = "jdbc:oracle:thin:@localhost:1521:XE";
+    private static final String USER = "C##Jefferson";
+    private static final String PASSWORD = "Jefferson";
+
     public Menu() {
         initComponents();
     }
+
     private void abrirInventario() {
         JFrame inventarioFrame = new JFrame("Inventario");
-        inventarioFrame.setSize(1020, 580);
+        inventarioFrame.setSize(1920, 1040);
         inventarioFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         inventarioFrame.setLayout(new BorderLayout());
-        
+
         // Crear el modelo de tabla para el inventario
-        String[] columnNames = {"ID","Producto", "Cantidad", "Precio"};
-        
+        String[] columnNames = {"ID", "Producto", "Cantidad", "Precio"};
+
         DefaultTableModel inventarioTableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -73,19 +79,16 @@ public class Menu extends JFrame {
         inventarioFrame.add(scrollPane, BorderLayout.CENTER);
         //
         //OBtener datos de la tabla Inventario Fijo
-        String[] ID_inventario_Nofijo = BaseDatos("SELECT i.Inv_Fijo_id FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id ","inv_fijo_id");
-        String[] NomProducto_Nofijo = BaseDatos("SELECT p.Producto_nom FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id ","producto_nom");
-        String[] Stock_Nofijo = BaseDatos("SELECT i.Stock_Disponible FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id ","Stock_Disponible");
-        String[] Precio_Nofijo = BaseDatos("SELECT p.Precio FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id","Precio");
-        
-        for (int i = 0; i<NomProducto_Nofijo.length;i++)
-        {
+        String[] ID_inventario_Nofijo = BaseDatos("SELECT i.Inv_Fijo_id FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id ", "inv_fijo_id");
+        String[] NomProducto_Nofijo = BaseDatos("SELECT p.Producto_nom FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id ", "producto_nom");
+        String[] Stock_Nofijo = BaseDatos("SELECT i.Stock_Disponible FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id ", "Stock_Disponible");
+        String[] Precio_Nofijo = BaseDatos("SELECT p.Precio FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id", "Precio");
+
+        for (int i = 0; i < NomProducto_Nofijo.length; i++) {
             //Añade cada fila de al tablero desde los datos de la tabla inv_fijo
-            inventarioTableModel.addRow(new Object[]{ID_inventario_Nofijo[i], NomProducto_Nofijo[i],Stock_Nofijo[i] ,Precio_Nofijo[i]});
+            inventarioTableModel.addRow(new Object[]{ID_inventario_Nofijo[i], NomProducto_Nofijo[i], Stock_Nofijo[i], Precio_Nofijo[i]});
         }
-        
-        
-        
+
         // Crear panel para los botones
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -100,8 +103,7 @@ public class Menu extends JFrame {
                 String producto = JOptionPane.showInputDialog(inventarioFrame, "Ingrese el nombre del producto:");
                 String cantidadStr = JOptionPane.showInputDialog(inventarioFrame, "Ingrese la cantidad:");
                 String precioStr = JOptionPane.showInputDialog(inventarioFrame, "Ingrese el precio:");
-                
-                
+
                 if (producto != null && cantidadStr != null && precioStr != null) {
                     try {
                         int cantidad = Integer.parseInt(cantidadStr);
@@ -155,26 +157,25 @@ public class Menu extends JFrame {
         inventarioFrame.setVisible(true);
     }
 
-
     private void initComponents() {
         panel_opciones = new JPanel();
         texto_Categoria = new JButton();
         panel_pedidos = new JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(1020, 580));
+        setPreferredSize(new Dimension(1920, 1040));
         setLayout(null);
         getContentPane().setBackground(new Color(0, 0, 128)); // Cambiar el color de fondo a azul marino
 
         panel_opciones.setBackground(new Color(204, 204, 255));
         panel_opciones.setLayout(new GridLayout(0, 1));
         add(panel_opciones);
-        panel_opciones.setBounds(410, 40, 340, 370);
+        panel_opciones.setBounds(760, 80, 740, 800);
 
         panel_pedidos.setBackground(new Color(135, 206, 250)); // Color celeste
         panel_pedidos.setLayout(new BorderLayout());
         add(panel_pedidos);
-        panel_pedidos.setBounds(90, 40, 310, 370);
+        panel_pedidos.setBounds(25, 80, 725, 800); //;
 
         // Crear la JTable
         String[] columnNames = {"#", "Producto", "Precio"};
@@ -185,37 +186,42 @@ public class Menu extends JFrame {
             }
         };
         pedidosTable = new JTable(tableModel);
-        pedidosTable.setFont(new Font("Arial", Font.PLAIN, 18)); // Tamaño de texto más grande
+        pedidosTable.setFont(new Font("Arial", Font.PLAIN, 24)); // Tamaño de texto más grande
         pedidosTable.setRowHeight(30); // Aumentar el alto de las filas
 
         // Ajustar el ancho de la columna #
-        pedidosTable.getColumnModel().getColumn(0).setPreferredWidth(40); // Ancho para la columna #
+        pedidosTable.getColumnModel().getColumn(0).setPreferredWidth(20); // Ancho para la columna #
 
         JTableHeader header = pedidosTable.getTableHeader();
-        header.setFont(new Font("Arial", Font.BOLD, 18)); // Tamaño de texto más grande para el encabezado
+        header.setFont(new Font("Arial", Font.BOLD, 24)); // Tamaño de texto más grande para el encabezado
         JScrollPane scrollPane = new JScrollPane(pedidosTable);
         panel_pedidos.add(scrollPane, BorderLayout.CENTER);
 
         // Panel para botones de acción
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout());
+        buttonPanel.setLayout(new BorderLayout());
 
         // Botón para eliminar un producto
         removeButton = new JButton("Eliminar Producto");
         removeButton.addActionListener(e -> eliminarProducto());
-        buttonPanel.add(removeButton);
+        removeButton.setPreferredSize(new Dimension(250, 60));
+        buttonPanel.add(removeButton, BorderLayout.WEST);
 
         // Botón para guardar
         saveButton = new JButton("Guardar");
         saveButton.addActionListener(e -> guardarPedidos());
-        buttonPanel.add(saveButton);
+        saveButton.setPreferredSize(new Dimension(100, 60));
+        buttonPanel.add(saveButton, BorderLayout.CENTER);
 
         // Botón para limpiar
         clearButton = new JButton("Limpiar");
         clearButton.addActionListener(e -> limpiarPedidos());
-        buttonPanel.add(clearButton);
+        clearButton.setPreferredSize(new Dimension(250, 60));
+        clearButton.setBackground(Color.red);
+        buttonPanel.add(clearButton, BorderLayout.EAST);
 
         panel_pedidos.add(buttonPanel, BorderLayout.SOUTH);
+
 
         // Panel para TextField y Botón de búsqueda
         JPanel searchPanel = new JPanel();
@@ -233,32 +239,29 @@ public class Menu extends JFrame {
         panel_pedidos.add(searchPanel, BorderLayout.NORTH);
 
         // Títulos de categorías
-        JLabel categoriaLabel = new JLabel("Categorías", SwingConstants.CENTER);
-        categoriaLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        JLabel categoriaLabel = new JLabel("Categorias", SwingConstants.CENTER);
+        categoriaLabel.setFont(new Font("Arial", Font.BOLD, 42));
         categoriaLabel.setForeground(Color.WHITE);
         add(categoriaLabel);
-        categoriaLabel.setBounds(760, 40, 230, 30);
+        categoriaLabel.setBounds(1600, 25, 230, 50);
 
-        
         //Ejecucion de extraer categorias de la base de datos
         String Consulta_Categorias = "SELECT categoria_nom FROM categorias";
         String Parte_Categoria = "Categoria_nom";
-        String[] productos = BaseDatos(Consulta_Categorias,Parte_Categoria);
-        
-        
+        String[] productos = BaseDatos(Consulta_Categorias, Parte_Categoria);
 
         int yPosition = 80;
         for (String producto : productos) {
             JButton button = new JButton(producto);
-            button.setBounds(760, yPosition, 230, 30);
+            button.setBounds(1510, yPosition, 400, 80);
             button.addActionListener(e -> mostrarOpciones(producto));
             add(button);
-            yPosition += 30;
+            yPosition += 80;
         }
 
         // Botón "Baucher"
         payButton = new JButton("Baucher: S/. 0.00");
-        payButton.setBounds(780, 430, 200, 80); // Ajustar posición
+        payButton.setBounds(1510, 885, 400, 120); // Ajustar posición
         payButton.setBackground(new Color(255, 255, 0)); // Color de fondo amarillo
         payButton.addActionListener(e -> pagar());
         payButton.setFont(new Font("Arial", Font.BOLD, 16)); // Fuente en negrita
@@ -269,13 +272,13 @@ public class Menu extends JFrame {
                 BorderFactory.createEmptyBorder(10, 10, 10, 10) // Espacio interno
         ));
         add(payButton);
-
+        
         // Botones de navegación
         JButton inventarioButton = new JButton("Inventario");
         JButton totalVendidoButton = new JButton("Total Vendido");
 
         // Ajustar tamaño y centrar
-        Dimension buttonSize = new Dimension(150, 50);
+        Dimension buttonSize = new Dimension(300, 100);
         inventarioButton.setPreferredSize(buttonSize);
         totalVendidoButton.setPreferredSize(buttonSize);
 
@@ -295,9 +298,13 @@ public class Menu extends JFrame {
         navButtonPanel.add(clientesAtendidosButton);
 
         add(navButtonPanel);
-        navButtonPanel.setBounds(0, 450, 1020, 50); // Ajustar posición
+        navButtonPanel.setBounds(20, 900, 1020, 100); // Ajustar posición
+        
+        
+        //reloj 
+        
 
-        pack();
+        
     }
 
     private void mostrarOpciones(String categoria) {
@@ -372,32 +379,28 @@ public class Menu extends JFrame {
     private String[] getOpciones(String categoria) {
         // Aquí defines las opciones por categoría
 
-
-        String[] id_Categoria = BaseDatos("select categoria_id from categorias where categoria_nom = '"+categoria+"'","categoria_id");
-        String[] array_MostrarProductos = BaseDatos("select producto_nom from productos where categoria_id = '"+id_Categoria[0]+"'","producto_nom");
+        String[] id_Categoria = BaseDatos("select categoria_id from categorias where categoria_nom = '" + categoria + "'", "categoria_id");
+        String[] array_MostrarProductos = BaseDatos("select producto_nom from productos where categoria_id = '" + id_Categoria[0] + "'", "producto_nom");
         return array_MostrarProductos;
-            
-        }
-    
-    
-    private String getPrecio(String pedido) {
-        // Aquí defines el precio por producto
-        String[] TodoProductos = BaseDatos("select producto_nom from productos","producto_nom");
 
-        for (String item : TodoProductos)
-        {
-            if (pedido.equals(item)){
-                
-            String[] PrecioProducto = BaseDatos("select Precio from productos where Producto_nom = '"+item+"'","Precio");
-            String precio_Str = PrecioProducto[0];
-            return precio_Str;}
-        }
-        
-        return "0.01";
-        
     }
 
-    
+    private String getPrecio(String pedido) {
+        // Aquí defines el precio por producto
+        String[] TodoProductos = BaseDatos("select producto_nom from productos", "producto_nom");
+
+        for (String item : TodoProductos) {
+            if (pedido.equals(item)) {
+
+                String[] PrecioProducto = BaseDatos("select Precio from productos where Producto_nom = '" + item + "'", "Precio");
+                String precio_Str = PrecioProducto[0];
+                return precio_Str;
+            }
+        }
+
+        return "0.01";
+
+    }
 
     private void abrirVentanaVacía(String title) {
         // Aquí defines la funcionalidad para abrir una ventana vacía
@@ -406,20 +409,20 @@ public class Menu extends JFrame {
 
     private void guardarPedidos() {
         if (tableModel.getRowCount() > 0) {
-        String mesa = "Mesa " + mesaCounter;
-        ArrayList<String[]> pedidos = new ArrayList<>();
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            String producto = (String) tableModel.getValueAt(i, 1);
-            String precio = (String) tableModel.getValueAt(i, 2);
-            pedidos.add(new String[]{producto, precio});
+            String mesa = "Mesa " + mesaCounter;
+            ArrayList<String[]> pedidos = new ArrayList<>();
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                String producto = (String) tableModel.getValueAt(i, 1);
+                String precio = (String) tableModel.getValueAt(i, 2);
+                pedidos.add(new String[]{producto, precio});
+            }
+            clientesAtendidos.put(mesa, pedidos);
+            mesaCounter++;
+            tableModel.setRowCount(0); // Limpiar la tabla de pedidos
+            total = 0.0; // Reiniciar el total
+            payButton.setText("Baucher: S/. 0.00"); // Reiniciar el texto del botón "Baucher"
         }
-        clientesAtendidos.put(mesa, pedidos);
-        mesaCounter++;
-        tableModel.setRowCount(0); // Limpiar la tabla de pedidos
-        total = 0.0; // Reiniciar el total
-        payButton.setText("Baucher: S/. 0.00"); // Reiniciar el texto del botón "Baucher"
     }
-}
 
     private void limpiarPedidos() {
         tableModel.setRowCount(0);
@@ -513,31 +516,32 @@ public class Menu extends JFrame {
             payButton.setText("Baucher: S/. " + total);
         }
     }
+
     public static String[] BaseDatos(String Sentencia, String ParteTabla) {
         Connection conn = null;
         Statement stmt = null;
         ResultSet rs = null;
         List<String> List_Momentania = new ArrayList<>();
-        
+
         try {
             // Cargar el driver JDBC
             Class.forName("oracle.jdbc.driver.OracleDriver");
-            
+
             // Establecer la conexión
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            
+
             // Crear un statement
             stmt = conn.createStatement();
-            
+
             // Ejecutar la consulta
             rs = stmt.executeQuery(Sentencia);
-            
+
             // Procesar los resultados
             while (rs.next()) {
                 String Cate = rs.getString(ParteTabla);
                 List_Momentania.add(Cate);
             }
-            
+
             // Convertir la lista en un array
             return List_Momentania.toArray(new String[0]);
         } catch (ClassNotFoundException e) {
@@ -547,14 +551,20 @@ public class Menu extends JFrame {
         } finally {
             // Cerrar los recursos
             try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
+                if (rs != null) {
+                    rs.close();
+                }
+                if (stmt != null) {
+                    stmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
-        
+
         // Retornar null si ocurrió algún error
         return null;
     }
@@ -587,9 +597,15 @@ public class Menu extends JFrame {
             }
         }
     }
-    
+    //reloj
+    private void actualizarReloj() {
+        Date ahora = new Date();
+        String horaActual = formatoHora.format(ahora);
+        relojLabel.setText(horaActual);
+    }
+
     public static void main(String[] args) {
-        
+
         EventQueue.invokeLater(() -> {
             new Menu().setVisible(true);
         });
