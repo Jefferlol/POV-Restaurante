@@ -16,7 +16,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
-import java.awt.*;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -44,10 +44,9 @@ public class menu_opciones extends javax.swing.JFrame {
     private static final String URL = "jdbc:oracle:thin:@localhost:1521:XE";
     private static final String USER = "C##Jefferson";
     private static final String PASSWORD = "Jefferson";
-  
-    
-    
-    
+    //private HashMap<String, List<String>> pedidosPorMesa = new HashMap<>();
+    private HashMap<String, ArrayList<String[]>> pedidosPorMesa;
+
     DefaultListModel<String> productListModel = new DefaultListModel<>();
     JList<String> productList = new JList<>(productListModel);
     private List<String> productosGuardados = new ArrayList<>();
@@ -55,11 +54,11 @@ public class menu_opciones extends javax.swing.JFrame {
     private JComboBox<String> mesaComboBox;
     private JComboBox<String> comboMesas;
     private int mesaCounter=0;
-    private HashMap<String, ArrayList<String[]>> pedidosPorMesa;
+  
     Color buttonColor = new Color(236, 240, 241);
 
     private final Border border = new LineBorder(java.awt.Color.BLACK, 1);
-    
+
     public menu_opciones() {
          initComponents();
         Lista_Productos.setBorder(border);
@@ -92,47 +91,97 @@ public class menu_opciones extends javax.swing.JFrame {
                         if (index >= 0) {
                             Lista_Productos.ensureIndexIsVisible(index);
                         }
-                        Lista_Productos.clearSelection();
                     }
                 }
             }
         });
        
     }
-   
     private void agregarProductoATabla(String producto) {
-         DefaultTableModel model = (DefaultTableModel) tabla_pedidos.getModel();
-        String precio = obtenerPrecioProducto(producto);
-        model.addRow(new Object[]{model.getRowCount() + 1, producto, precio});
+        // Obtener el precio del producto
+        String precioString = obtenerPrecioProducto(producto);
+        BigDecimal precio = new BigDecimal(precioString).setScale(2, RoundingMode.HALF_UP);
 
-        int lastRow = model.getRowCount() - 1;
+        // Crear un nuevo modelo de tabla si no existe
+        DefaultTableModel modelo = (DefaultTableModel) tabla_pedidos.getModel();
 
-        JTable table = tabla_pedidos;
+        // Verificar si el producto ya está en la tabla
+        boolean productoExiste = false;
+        int filaExistente = -1;
 
-        Rectangle cellRect = table.getCellRect(lastRow, 0, true);
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            String nombreProducto = (String) modelo.getValueAt(i, 1);
+            if (nombreProducto.equals(producto)) {
+                productoExiste = true;
+                filaExistente = i;
+                break;
+            }
+        }
 
-        table.scrollRectToVisible(cellRect);
+        if (productoExiste) {
+            // Actualizar la cantidad y el precio si el producto ya existe en la tabla
+            int cantidadActual = (int) modelo.getValueAt(filaExistente, 0);
+            BigDecimal precioActual = (BigDecimal) modelo.getValueAt(filaExistente, 2);
+            BigDecimal nuevoTotal = precioActual.add(precio);
+            modelo.setValueAt(cantidadActual + 1, filaExistente, 0); // Incrementar cantidad
+            modelo.setValueAt(nuevoTotal, filaExistente, 2); // Actualizar precio total
+        } else {
+            // Agregar nuevo producto a la tabla
+            modelo.addRow(new Object[]{
+                1, // Cantidad inicial
+                producto, // Nombre del producto
+                precio // Precio
+            });
+        }
         
-    }
-
-    private String obtenerPrecioProducto(String producto) {
+        this.Lista_Productos.clearSelection();
         
-        String precio1[] = ReadBD("SELECT PRECIO FROM PRODUCTOS where Producto_NOM = '"+producto+"'","PRECIO");
-        return precio1[0];
-    }
-   
+        
 
+    }
     public HashMap<String, ArrayList<String[]>> getPedidosPorMesa() {
         return pedidosPorMesa;
     }
+    
+
     public void agregarPedido(String mesa, String[] pedido) {
-        /*if (!pedidosPorMesa.containsKey(mesa)) {
+        if (!pedidosPorMesa.containsKey(mesa)) {
             pedidosPorMesa.put(mesa, new ArrayList<>());
         }
-        pedidosPorMesa.get(mesa).add(pedido);*/
-        pedidosPorMesa.computeIfAbsent(mesa, k -> new ArrayList<>()).add(pedido);
+        pedidosPorMesa.get(mesa).add(pedido);
     }
-    
+   
+
+    private String obtenerPrecioProducto(String producto) {
+      String precio = "0.00";
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            String sql = "SELECT PRECIO FROM PRODUCTOS WHERE PRODUCTO_NOM= ?";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, producto);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                precio = resultSet.getString("PRECIO");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return precio;
+    }
+
    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -162,20 +211,22 @@ public class menu_opciones extends javax.swing.JFrame {
         Lista_Productos = new javax.swing.JList<>();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
+        btn_buscar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(1165, 750));
+        setMinimumSize(new java.awt.Dimension(1024, 750));
         getContentPane().setLayout(null);
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setMinimumSize(new java.awt.Dimension(800, 720));
+        jPanel2.setMinimumSize(new java.awt.Dimension(690, 720));
         jPanel2.setPreferredSize(new java.awt.Dimension(690, 720));
         jPanel2.setLayout(null);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 3, 32)); // NOI18N
         jLabel2.setText("Productos");
         jPanel2.add(jLabel2);
-        jLabel2.setBounds(460, 20, 160, 40);
+        jLabel2.setBounds(380, 20, 160, 40);
 
         limpiar.setBackground(new java.awt.Color(250, 250, 250));
         limpiar.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
@@ -187,7 +238,7 @@ public class menu_opciones extends javax.swing.JFrame {
             }
         });
         jPanel2.add(limpiar);
-        limpiar.setBounds(320, 610, 110, 90);
+        limpiar.setBounds(260, 610, 110, 90);
 
         eliminar.setBackground(new java.awt.Color(250, 250, 250));
         eliminar.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
@@ -211,7 +262,7 @@ public class menu_opciones extends javax.swing.JFrame {
             }
         });
         jPanel2.add(guardar);
-        guardar.setBounds(170, 610, 110, 90);
+        guardar.setBounds(140, 610, 110, 90);
 
         tabla_pedidos.setBackground(new java.awt.Color(204, 204, 255));
         tabla_pedidos.setFont(new java.awt.Font("Franklin Gothic Demi Cond", 0, 18)); // NOI18N
@@ -227,7 +278,7 @@ public class menu_opciones extends javax.swing.JFrame {
         jScrollPane1.setViewportView(tabla_pedidos);
 
         jPanel2.add(jScrollPane1);
-        jScrollPane1.setBounds(10, 70, 420, 530);
+        jScrollPane1.setBounds(10, 70, 360, 530);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setMinimumSize(new java.awt.Dimension(300, 720));
@@ -235,7 +286,7 @@ public class menu_opciones extends javax.swing.JFrame {
 
         jButton1.setText("jButton1");
         jPanel1.add(jButton1);
-        jButton1.setBounds(500, 60, 57, 24);
+        jButton1.setBounds(500, 60, 75, 23);
 
         jButton2.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyecto/icons8-cigarro-64.png"))); // NOI18N
@@ -345,26 +396,35 @@ public class menu_opciones extends javax.swing.JFrame {
         jLabel1.setBounds(20, 0, 190, 50);
 
         jPanel2.add(jPanel1);
-        jPanel1.setBounds(960, 20, 190, 680);
+        jPanel1.setBounds(710, 20, 190, 680);
 
         Lista_Productos.setBackground(new java.awt.Color(204, 204, 204));
-        Lista_Productos.setFont(new java.awt.Font("Bernard MT Condensed", 0, 48)); // NOI18N
+        Lista_Productos.setFont(new java.awt.Font("Bernard MT Condensed", 0, 32)); // NOI18N
         jScrollPane2.setViewportView(Lista_Productos);
 
         jPanel2.add(jScrollPane2);
-        jScrollPane2.setBounds(460, 70, 480, 630);
+        jScrollPane2.setBounds(380, 70, 330, 630);
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyecto/103825100-comida-de-restaurante.jpg"))); // NOI18N
         jPanel2.add(jLabel3);
         jLabel3.setBounds(240, 110, 480, 480);
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 3, 32)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
         jLabel4.setText("Pedidos");
         jPanel2.add(jLabel4);
-        jLabel4.setBounds(10, 25, 140, 40);
+        jLabel4.setBounds(10, 0, 170, 30);
+        jPanel2.add(jTextField1);
+        jTextField1.setBounds(160, 30, 200, 30);
+
+        btn_buscar.setBackground(new java.awt.Color(255, 0, 0));
+        btn_buscar.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+        btn_buscar.setForeground(new java.awt.Color(255, 255, 255));
+        btn_buscar.setText("Buscar");
+        jPanel2.add(btn_buscar);
+        btn_buscar.setBounds(10, 30, 140, 30);
 
         getContentPane().add(jPanel2);
-        jPanel2.setBounds(0, 0, 1150, 710);
+        jPanel2.setBounds(0, 0, 900, 710);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -411,38 +471,41 @@ public class menu_opciones extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
     private int contadorMesas = 1;
     private void guardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarActionPerformed
-         
-       JComboBox<String> comboBox = new JComboBox<>(new String[]{"Mesa 1", "Mesa 2", "Mesa 3", "Mesa 4", "Mesa 5", "Mesa 6", "Mesa 7", "Mesa 8"});
-        comboBox.setFont(new Font("Arial", Font.PLAIN, 36)); // Tamaño de fuente escalado
 
-        // Crear un JPanel y agregar el JComboBox
-        JPanel panel = new JPanel();
-        panel.add(comboBox);
+        DefaultTableModel model = (DefaultTableModel) tabla_pedidos.getModel();
+        String mesaSeleccionada = "Mesa " + (mesaCounter + 1);
 
-        // Modificar el tamaño del JPanel
-        panel.setPreferredSize(new Dimension(200, 100)); // Escalar el tamaño del panel
+        if (mesaSeleccionada != null) {
+            ArrayList<String[]> pedidos = new ArrayList<>();
+            for (int i = 0; i < model.getRowCount(); i++) {
+                try {
+                    // Extraer valores de cada columna de la fila actual
+                    String cantidad = String.valueOf(model.getValueAt(i, 0)); // Cantidad en la primera columna
+                    String producto = (String) model.getValueAt(i, 1);
+                    String precio = String.valueOf(model.getValueAt(i, 2));
+                    String estado = "Pendiente"; // Estado inicial
 
-        // Personalizar los botones del JOptionPane
-        UIManager.put("OptionPane.buttonFont", new Font("Arial", Font.PLAIN, 36));
-        UIManager.put("OptionPane.messageFont", new Font("Arial", Font.PLAIN, 36));
-        UIManager.put("OptionPane.minimumSize", new Dimension(200, 100)); // Tamaño mínimo del JOptionPane
+                    // Añadir el pedido a la lista
+                    pedidos.add(new String[]{mesaSeleccionada, producto, cantidad, precio, estado});
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, "Error al procesar la tabla. Verifique los valores.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
 
-        // Mostrar el JOptionPane con el JPanel que contiene el JComboBox
-        int option = JOptionPane.showConfirmDialog(
-                null, 
-                panel, 
-                "Selecciona una opción", 
-                JOptionPane.OK_CANCEL_OPTION, 
-                JOptionPane.QUESTION_MESSAGE
-        );
+            // Guardar los pedidos en el HashMap
+            pedidosPorMesa.put(mesaSeleccionada, pedidos);
+            JOptionPane.showMessageDialog(this, "Pedidos guardados exitosamente para " + mesaSeleccionada);
 
-        // Obtener la opción seleccionada
-        if (option == JOptionPane.OK_OPTION) {
-            String selectedOption = (String) comboBox.getSelectedItem();
-            System.out.println("Opción seleccionada: " + selectedOption);
+            // Limpiar la tabla después de guardar
+            model.setRowCount(0);
+            mesaCounter++; // Incrementar el contador para la próxima mesa
+            actualizarComboBoxMesas(); // Actualizar el JComboBox con las mesas actuales
         } else {
-            System.out.println("Diálogo cancelado");
+            JOptionPane.showMessageDialog(this, "Seleccione una mesa para guardar los pedidos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+         
 
 
     
@@ -454,12 +517,6 @@ public class menu_opciones extends javax.swing.JFrame {
         int selectedRow = tabla_pedidos.getSelectedRow();
         if (selectedRow >= 0) {
             model.removeRow(selectedRow);
-            for (int i = 0; i< model.getRowCount(); i++)
-            {
-                String a = ""+i;
-                model.setValueAt(a, i, 0);
-            
-            }
         } else {
             JOptionPane.showMessageDialog(this, "Selecciona una fila para eliminar.");
         }
@@ -470,16 +527,32 @@ public class menu_opciones extends javax.swing.JFrame {
         model.setRowCount(0);
     }//GEN-LAST:event_limpiarActionPerformed
    private void mostrarPedidosEnTabla(String mesa) {
-        
+
+        DefaultTableModel model = (DefaultTableModel) tabla_pedidos.getModel();
+        model.setRowCount(0); // Limpiar la tabla antes de mostrar los nuevos datos
+
+        ArrayList<String[]> pedidos = pedidosPorMesa.get(mesa);
+        if (pedidos != null) {
+            for (String[] pedido : pedidos) {
+                model.addRow(new Object[]{model.getRowCount() + 1, pedido[1], pedido[3]}); // Agregar filas con el formato adecuado
+            }
+        }
     }
     
     private void actualizarComboBoxMesas() {
-        
-         for (int i = 1; i <= 8; i++) {
-            mesaComboBox.addItem("Mesa " + i);
-        }
+        if (mesaComboBox != null) {
+            mesaComboBox.removeAllItems();
+            for (String mesa : pedidosPorMesa.keySet()) {
+                mesaComboBox.addItem(mesa);
+            }
+        }   
     }
 
+    private void addToOrder(String producto, int precio) {
+         DefaultTableModel model = (DefaultTableModel) tabla_pedidos.getModel();
+        model.addRow(new Object[]{model.getRowCount() + 1, producto, precio});
+        
+    }
 
     private void AgregarLista (String Categoria)
     {
@@ -494,6 +567,7 @@ public class menu_opciones extends javax.swing.JFrame {
         } else {
             System.out.println("El modelo no es un DefaultListModel.");
         }
+       
     }
     
     
@@ -577,8 +651,6 @@ public class menu_opciones extends javax.swing.JFrame {
             }
         }
     }
-    
-    
  
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(() -> new menu_opciones().setVisible(true));
@@ -587,6 +659,7 @@ public class menu_opciones extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList<String> Lista_Productos;
+    private javax.swing.JButton btn_buscar;
     private javax.swing.JButton eliminar;
     private javax.swing.JButton guardar;
     private javax.swing.JButton jButton1;
@@ -608,6 +681,7 @@ public class menu_opciones extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextField jTextField1;
     private javax.swing.JButton limpiar;
     private javax.swing.JTable tabla_pedidos;
     // End of variables declaration//GEN-END:variables

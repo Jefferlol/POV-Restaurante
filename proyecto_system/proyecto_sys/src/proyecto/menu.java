@@ -11,6 +11,7 @@ public class menu extends javax.swing.JFrame {
     public menu() {
         initComponents();
         menuOpciones = new menu_opciones();
+        setLocationRelativeTo(null);
         
     }
     private HashMap<String, ArrayList<String[]>> obtenerPedidos() {
@@ -19,6 +20,14 @@ public class menu extends javax.swing.JFrame {
         }
         return new HashMap<>();
     }
+    private ArrayList<String[]> obtenerPedidosEntregados() {
+        ArrayList<String[]> pedidos = new ArrayList<>();
+        // Aquí agregas los datos de prueba o reales a la lista
+        pedidos.add(new String[]{"Mesa 1", "Entregado"});
+        pedidos.add(new String[]{"Mesa 2", "Entregado"});
+        return pedidos;
+    }
+
      
 
     @SuppressWarnings("unchecked")
@@ -31,19 +40,18 @@ public class menu extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
         panel_principal = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMinimumSize(new java.awt.Dimension(1286, 750));
+        setMinimumSize(new java.awt.Dimension(1036, 750));
         getContentPane().setLayout(null);
 
         panel_menu.setBackground(new java.awt.Color(0, 0, 0));
         panel_menu.setMinimumSize(new java.awt.Dimension(800, 720));
         panel_menu.setLayout(null);
 
-        jButton1.setBackground(new java.awt.Color(250, 250, 250));
+        jButton1.setBackground(new java.awt.Color(255, 255, 0));
         jButton1.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         jButton1.setForeground(new java.awt.Color(0, 255, 0));
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyecto/icons8-factura-50.png"))); // NOI18N
@@ -55,7 +63,7 @@ public class menu extends javax.swing.JFrame {
         panel_menu.add(jButton1);
         jButton1.setBounds(10, 500, 100, 90);
 
-        jButton2.setBackground(new java.awt.Color(250, 250, 250));
+        jButton2.setBackground(new java.awt.Color(255, 255, 0));
         jButton2.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         jButton2.setForeground(new java.awt.Color(51, 255, 0));
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyecto/icons8-producto-50.png"))); // NOI18N
@@ -67,7 +75,7 @@ public class menu extends javax.swing.JFrame {
         panel_menu.add(jButton2);
         jButton2.setBounds(10, 610, 100, 90);
 
-        jButton3.setBackground(new java.awt.Color(250, 250, 250));
+        jButton3.setBackground(new java.awt.Color(255, 255, 0));
         jButton3.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         jButton3.setForeground(new java.awt.Color(0, 255, 0));
         jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/icons8-terminal-punto-de-venta-50.png"))); // NOI18N
@@ -79,7 +87,7 @@ public class menu extends javax.swing.JFrame {
         panel_menu.add(jButton3);
         jButton3.setBounds(10, 170, 100, 90);
 
-        jButton4.setBackground(new java.awt.Color(250, 250, 250));
+        jButton4.setBackground(new java.awt.Color(255, 255, 0));
         jButton4.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         jButton4.setForeground(new java.awt.Color(51, 255, 0));
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyecto/pngegg (1).png"))); // NOI18N
@@ -91,7 +99,7 @@ public class menu extends javax.swing.JFrame {
         panel_menu.add(jButton4);
         jButton4.setBounds(10, 280, 100, 90);
 
-        jButton5.setBackground(new java.awt.Color(250, 250, 250));
+        jButton5.setBackground(new java.awt.Color(255, 255, 0));
         jButton5.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         jButton5.setForeground(new java.awt.Color(0, 255, 0));
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyecto/icons8-cliente-50.png"))); // NOI18N
@@ -102,14 +110,6 @@ public class menu extends javax.swing.JFrame {
         });
         panel_menu.add(jButton5);
         jButton5.setBounds(10, 390, 100, 90);
-
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyecto/Diseño sin título (3).png"))); // NOI18N
-        jLabel1.setToolTipText("");
-        jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jLabel1.setMinimumSize(new java.awt.Dimension(50, 40));
-        jLabel1.setPreferredSize(new java.awt.Dimension(120, 140));
-        panel_menu.add(jLabel1);
-        jLabel1.setBounds(-10, 30, 170, 160);
 
         getContentPane().add(panel_menu);
         panel_menu.setBounds(0, 0, 120, 710);
@@ -124,7 +124,7 @@ public class menu extends javax.swing.JFrame {
         jLabel2.setBounds(240, 110, 480, 480);
 
         getContentPane().add(panel_principal);
-        panel_principal.setBounds(120, 0, 1150, 710);
+        panel_principal.setBounds(120, 0, 920, 710);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -155,11 +155,27 @@ public class menu extends javax.swing.JFrame {
         } else {
             System.out.println("No se pudo obtener el HashMap de pedidos.");
         }
+        
 
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+       // ArrayList<String[]> pedidosEntregados = obtenerPedidosEntregados();
+
+        // Crear una instancia de la clase clientes_atendidos con los datos
         clientes_atendidos c = new clientes_atendidos();
+
+        // Actualizar el panel principal con la nueva vista
+        actualizarPanelPrincipal(c);
+        
+
+        // Aquí puedes agregar lógica para llenar la instancia de pedidos con datos reales si es necesario
+        // Por ejemplo:
+        // pedidos.agregarPedidosEntregados(obtenerPedidosEntregados());
+        // Crear una instancia de la clase clientes_atendidos con el objeto pedidos
+       
+
+        // Actualizar el panel principal con la nueva vista
         actualizarPanelPrincipal(c);
     }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -201,7 +217,6 @@ public class menu extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel panel_menu;
     private javax.swing.JPanel panel_principal;

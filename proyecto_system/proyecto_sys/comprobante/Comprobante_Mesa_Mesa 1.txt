@@ -1,0 +1,26 @@
+            ***********************
+                     Restobar           
+               Comprobante de Pedido   
+                     Mesa: Mesa 1
+            ***********************
+           
+Ruc: 10730425878           
+Dirección: Perulandia - referencia 2 cuadras
+Fecha y Hora de generación: 15/08/2024 16:04:46
+Producto                  Cantidad   Precio (S/)
+------------------------------------------------------------
+H. Pollo Deshilachado     2          S/ 16,00  
+H. Queso Tocino           4          S/ 56,00  
+H. Hawaiana con Filete de Pollo 1          S/ 15,00  
+H. Hawaiana con Carne     1          S/ 15,00  
+H. Royal                  1          S/ 15,00  
+------------------------------------------------------------
+            
+Subtotal (S/):                      S/ 301,00 
+IGV (18%) (S/):                     S/ 54,18  
+Total (S/):                         S/ 355,18 
+
+
+             
+           Gracias por su preferencia!
+       Esperamos volver a atenderle pronto.    

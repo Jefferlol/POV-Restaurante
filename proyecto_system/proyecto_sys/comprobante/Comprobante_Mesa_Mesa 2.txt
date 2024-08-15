@@ -1,0 +1,27 @@
+            ***********************
+                     Restobar           
+               Comprobante de Pedido   
+                     Mesa: Mesa 2
+            ***********************
+           
+Ruc: 10730425878           
+Dirección: Perulandia - referencia 2 cuadras
+Fecha y Hora de generación: 15/08/2024 16:06:50
+Producto                  Cantidad   Precio (S/)
+------------------------------------------------------------
+H. Pollo Deshilachado     1          S/ 8,00   
+H. Clasica                1          S/ 10,00  
+H. Cheese                 1          S/ 12,00  
+Tequeños                  1          S/ 10,00  
+Anticuchos                1          S/ 13,00  
+Inka-Cola 500ml           1          S/ 5,00   
+------------------------------------------------------------
+            
+Subtotal (S/):                      S/ 58,00  
+IGV (18%) (S/):                     S/ 10,44  
+Total (S/):                         S/ 68,44  
+
+
+             
+           Gracias por su preferencia!
+       Esperamos volver a atenderle pronto.    
