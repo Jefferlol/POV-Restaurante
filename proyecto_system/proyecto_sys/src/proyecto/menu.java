@@ -124,7 +124,7 @@ public class menu extends javax.swing.JFrame {
         jLabel2.setBounds(240, 110, 480, 480);
 
         getContentPane().add(panel_principal);
-        panel_principal.setBounds(120, 0, 920, 710);
+        panel_principal.setBounds(120, 0, 930, 710);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

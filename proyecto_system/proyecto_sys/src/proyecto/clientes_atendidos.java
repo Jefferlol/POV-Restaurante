@@ -71,7 +71,7 @@ public class clientes_atendidos extends javax.swing.JFrame {
             }
         });
         jPanel1.add(boton_detalle);
-        boton_detalle.setBounds(670, 130, 270, 130);
+        boton_detalle.setBounds(600, 180, 270, 130);
 
         tabla_total.setBackground(new java.awt.Color(153, 153, 255));
         tabla_total.setModel(new javax.swing.table.DefaultTableModel(
@@ -85,7 +85,7 @@ public class clientes_atendidos extends javax.swing.JFrame {
         jScrollPane2.setViewportView(tabla_total);
 
         jPanel1.add(jScrollPane2);
-        jScrollPane2.setBounds(60, 90, 530, 450);
+        jScrollPane2.setBounds(30, 130, 530, 450);
 
         boton_baucher.setBackground(new java.awt.Color(255, 255, 0));
         boton_baucher.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
@@ -97,7 +97,7 @@ public class clientes_atendidos extends javax.swing.JFrame {
             }
         });
         jPanel1.add(boton_baucher);
-        boton_baucher.setBounds(680, 300, 270, 130);
+        boton_baucher.setBounds(600, 350, 270, 130);
 
         jLabel4.setBackground(new java.awt.Color(51, 51, 255));
         jLabel4.setFont(new java.awt.Font("Segoe UI", 3, 36)); // NOI18N

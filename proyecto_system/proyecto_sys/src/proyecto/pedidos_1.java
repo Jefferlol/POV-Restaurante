@@ -360,18 +360,19 @@ public class pedidos_1 extends javax.swing.JFrame {
                 if (!pedido[4].isEmpty()) { // Solo agregar productos entregados
                     double precio = Double.parseDouble(pedido[3]);
                     int cantidad = Integer.parseInt(pedido[2]);
-                    totalSinIGV += precio * cantidad;
+                    totalSinIGV += precio;
                     comprobante.append(String.format("%-25s %-10d %-10s\n", pedido[1], cantidad, String.format("S/ %.2f", precio)));
                     productosParaComprobante = true; // Hay productos que se agregarán al comprobante
                 }
             }
 
             if (productosParaComprobante) {
+                double totalcomprobante = totalSinIGV*0.82;
                 double igv = totalSinIGV * 0.18;
-                double totalConIGV = totalSinIGV + igv;
+                double totalConIGV = totalSinIGV;
                 comprobante.append("------------------------------------------------------------\n");
                 comprobante.append("            \n");
-                comprobante.append(String.format("%-35s %-10s\n", "Subtotal (S/):", String.format("S/ %.2f", totalSinIGV)));
+                comprobante.append(String.format("%-35s %-10s\n", "Subtotal (S/):", String.format("S/ %.2f", totalcomprobante)));
                 comprobante.append(String.format("%-35s %-10s\n", "IGV (18%) (S/):", String.format("S/ %.2f", igv)));
                 comprobante.append(String.format("%-35s %-10s\n", "Total (S/):", String.format("S/ %.2f", totalConIGV)));
 
@@ -388,7 +389,7 @@ public class pedidos_1 extends javax.swing.JFrame {
 
                 // Guardar el comprobante en un archivo
                 try {
-                    String folderPath = "F:\\proyecto_modificado_chung\\proyecto_system\\proyecto_sys\\comprobante\\"; // Asegúrate de que esta ruta termina con "\"
+                    String folderPath = "comprobante\\"; // Asegúrate de que esta ruta termina con "\"
                     String fileName = "Comprobante_Mesa_" + mesaSeleccionada + ".txt";
                     FileWriter fileWriter = new FileWriter(folderPath + fileName);
                     fileWriter.write(comprobante.toString());
