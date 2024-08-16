@@ -6,20 +6,17 @@
            
 Ruc: 10730425878           
 Dirección: Perulandia - referencia 2 cuadras
-Fecha y Hora de generación: 15/08/2024 16:06:50
+Fecha y Hora de generación: 15/08/2024 20:59:03
 Producto                  Cantidad   Precio (S/)
 ------------------------------------------------------------
-H. Pollo Deshilachado     1          S/ 8,00   
-H. Clasica                1          S/ 10,00  
-H. Cheese                 1          S/ 12,00  
-Tequeños                  1          S/ 10,00  
-Anticuchos                1          S/ 13,00  
-Inka-Cola 500ml           1          S/ 5,00   
+H. Hawaiana con Filete de Pollo 3          S/ 45,00  
+H. Hawaiana con Carne     1          S/ 15,00  
+H. Queso Tocino           1          S/ 14,00  
 ------------------------------------------------------------
             
-Subtotal (S/):                      S/ 58,00  
-IGV (18%) (S/):                     S/ 10,44  
-Total (S/):                         S/ 68,44  
+Subtotal (S/):                      S/ 60,68  
+IGV (18%) (S/):                     S/ 13,32  
+Total (S/):                         S/ 74,00  
 
 
              

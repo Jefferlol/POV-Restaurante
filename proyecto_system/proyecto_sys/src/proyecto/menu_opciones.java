@@ -42,8 +42,8 @@ public class menu_opciones extends javax.swing.JFrame {
     
     //Base de datos
     private static final String URL = "jdbc:oracle:thin:@localhost:1521:XE";
-    private static final String USER = "C##Jefferson";
-    private static final String PASSWORD = "Jefferson";
+    private static final String USER = "C##WILIAM";
+    private static final String PASSWORD = "system";
     //private HashMap<String, List<String>> pedidosPorMesa = new HashMap<>();
     private HashMap<String, ArrayList<String[]>> pedidosPorMesa;
 

@@ -18,8 +18,8 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 public class inventario extends javax.swing.JFrame {
     private static final String URL = "jdbc:oracle:thin:@localhost:1521:XE";
-    private static final String USER = "C##Jefferson";
-    private static final String PASSWORD = "Jefferson";
+    private static final String USER = "C##WILIAM";
+    private static final String PASSWORD = "system";
 
    
     public inventario() {
@@ -49,55 +49,7 @@ public class inventario extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
-    /*private void cargarDatos() {
-        DefaultTableModel modelo = (DefaultTableModel) tabla_inventario.getModel();
-        modelo.setRowCount(0);
-
-        String query = "SELECT p.PRODUCTO_ID, p.PRODUCTO_NOM, COALESCE(i.STOCK_DISPONIBLE, 0) AS \"Stock Disponible\", p.PRECIO AS Precio "
-                + "FROM PRODUCTOS p "
-                + 
-        
-"LEFT JOIN INV_FIJO i ON p.PRODUCTO_ID = i.PRODUCTO_ID";
-
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD); 
-             PreparedStatement stmt = conn.prepareStatement(query); 
-             ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                Object[] fila = new Object[4];
-                fila[0] = rs.getInt("PRODUCTO_ID");
-                fila[1] = rs.getString("PRODUCTO_NOM");
-                fila[2] = rs.getInt("Stock Disponible");
-                fila[3] = rs.getDouble("Precio");
-                modelo.addRow(fila);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    private void styleTable() {
-        // Cambiar la fuente y el tamaño del texto en la tabla
-        tabla_inventario.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        tabla_inventario.setForeground(Color.BLACK);
-        tabla_inventario.setBackground(Color.WHITE);
-        tabla_inventario.setSelectionBackground(new Color(204, 204, 255));
-        tabla_inventario.setSelectionForeground(Color.BLACK);
-
-     
-
-        // Ajustar el tamaño de las columnas
-        TableColumnModel columnModel = tabla_inventario.getColumnModel();
-        columnModel.getColumn(0).setPreferredWidth(100);
-        columnModel.getColumn(1).setPreferredWidth(300);
-        columnModel.getColumn(2).setPreferredWidth(150);
-        columnModel.getColumn(3).setPreferredWidth(150);
-
-        // Añadir bordes a las celdas
-        tabla_inventario.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
-        // Aplicar el renderizador de celdas personalizado
-        tabla_inventario.setDefaultRenderer(Object.class, new CustomCellRenderer());
-    }*/
+  
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
