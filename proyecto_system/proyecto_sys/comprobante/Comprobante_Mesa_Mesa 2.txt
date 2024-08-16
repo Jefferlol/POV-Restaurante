@@ -6,17 +6,18 @@
            
 Ruc: 10730425878           
 Dirección: Perulandia - referencia 2 cuadras
-Fecha y Hora de generación: 15/08/2024 20:59:03
+Fecha y Hora de generación: 16/08/2024 15:53:41
 Producto                  Cantidad   Precio (S/)
 ------------------------------------------------------------
-H. Hawaiana con Filete de Pollo 3          S/ 45,00  
-H. Hawaiana con Carne     1          S/ 15,00  
-H. Queso Tocino           1          S/ 14,00  
+H. Hawaiana con Carne     3          S/ 45,00  
+H. Royal                  2          S/ 30,00  
+H. Queso Tocino           2          S/ 28,00  
+H. Hawaiana con Filete de Pollo 2          S/ 30,00  
 ------------------------------------------------------------
             
-Subtotal (S/):                      S/ 60,68  
-IGV (18%) (S/):                     S/ 13,32  
-Total (S/):                         S/ 74,00  
+Subtotal (S/):                      S/ 109,06 
+IGV (18%) (S/):                     S/ 23,94  
+Total (S/):                         S/ 133,00 
 
 
              

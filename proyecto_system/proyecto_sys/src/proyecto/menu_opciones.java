@@ -2,6 +2,7 @@ package proyecto;
 
 //Base de datos
 
+import java.awt.BorderLayout;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,11 +17,20 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
-
+import javax.swing.border.AbstractBorder;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.math.BigDecimal;
@@ -50,17 +60,21 @@ public class menu_opciones extends javax.swing.JFrame {
     DefaultListModel<String> productListModel = new DefaultListModel<>();
     JList<String> productList = new JList<>(productListModel);
     private List<String> productosGuardados = new ArrayList<>();
-
+    private DefaultTableModel model;
     private JComboBox<String> mesaComboBox;
     private JComboBox<String> comboMesas;
     private int mesaCounter=0;
+    private JFrame frame;
+     private JFrame parentFrame;
   
     Color buttonColor = new Color(236, 240, 241);
-
+     private JComboBox<String> comboBoxMesas;
+ 
     private final Border border = new LineBorder(java.awt.Color.BLACK, 1);
 
     public menu_opciones() {
          initComponents();
+
         Lista_Productos.setBorder(border);
         
         pedidosPorMesa = new HashMap<>();
@@ -97,6 +111,133 @@ public class menu_opciones extends javax.swing.JFrame {
         });
        
     }
+    /*private void mostrarVentanaSeleccionMesa() {
+        // Crear el JFrame
+        JFrame ventanaMesa = new JFrame("Seleccionar Mesa");
+        ventanaMesa.setSize(300, 150);
+        ventanaMesa.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        ventanaMesa.setLayout(new BorderLayout());
+
+        // Crear el JComboBox con las mesas
+        JComboBox<String> comboMesas = new JComboBox<>();
+        for (int i = 1; i <= 8; i++) {
+            comboMesas.addItem("Mesa " + i);
+        }
+
+        // Crear el panel para los botones
+        JPanel panelBotones = new JPanel();
+        panelBotones.setLayout(new FlowLayout());
+
+        // Crear el botón Guardar
+        JButton botonGuardar = new JButton("Guardar");
+        botonGuardar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String mesaSeleccionada = (String) comboMesas.getSelectedItem();
+                guardarPedidos(mesaSeleccionada);
+                ventanaMesa.dispose(); // Cierra la ventana de selección
+            }
+        });
+
+        // Crear el botón Cancelar
+        JButton botonCancelar = new JButton("Cancelar");
+        botonCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ventanaMesa.dispose(); // Cierra la ventana de selección
+            }
+        });
+
+        // Añadir componentes al panel y al JFrame
+        panelBotones.add(botonGuardar);
+        panelBotones.add(botonCancelar);
+        ventanaMesa.add(comboMesas, BorderLayout.CENTER);
+        ventanaMesa.add(panelBotones, BorderLayout.SOUTH);
+
+        // Centrar la ventana en la pantalla
+        ventanaMesa.setLocationRelativeTo(null);
+
+        // Mostrar la ventana
+        ventanaMesa.setVisible(true);
+    }*/
+    private void mostrarVentanaSeleccionMesa() {
+        JFrame ventanaMesa = new JFrame("Seleccionar Mesa");
+        ventanaMesa.setSize(350, 200); // Aumentar tamaño de la ventana
+        ventanaMesa.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        ventanaMesa.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10); // Márgenes internos
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Crear el JComboBox con las mesas
+        JComboBox<String> comboMesas = new JComboBox<>();
+        for (int i = 1; i <= 8; i++) {
+            comboMesas.addItem("Mesa " + i);
+        }
+        comboMesas.setPreferredSize(new Dimension(300, 40)); // Tamaño del JComboBox
+        comboMesas.setBackground(Color.GREEN); // Color fosforescente
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2; // Ocupa 2 columnas
+        ventanaMesa.add(comboMesas, gbc);
+
+        // Crear el panel para los botones
+        JPanel panelBotones = new JPanel();
+        panelBotones.setLayout(new GridLayout(1, 2, 10, 0)); // GridLayout con espacio entre botones
+
+        // Crear el botón Guardar
+        JButton botonGuardar = new JButton("Guardar");
+        botonGuardar.setFont(new Font("Arial", Font.BOLD, 16)); // Tamaño de fuente mayor
+        botonGuardar.setPreferredSize(new Dimension(150, 50)); // Tamaño del botón
+        botonGuardar.setBackground(new Color(34, 139, 34)); // Verde oscuro
+        botonGuardar.setForeground(Color.WHITE);
+        botonGuardar.setFocusPainted(false);
+        botonGuardar.setBorder(BorderFactory.createRaisedBevelBorder());
+        botonGuardar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String mesaSeleccionada = (String) comboMesas.getSelectedItem();
+                guardarPedidos(mesaSeleccionada);
+                ventanaMesa.dispose(); // Cierra la ventana de selección
+            }
+        });
+
+        // Crear el botón Cancelar
+        JButton botonCancelar = new JButton("Cancelar");
+        botonCancelar.setFont(new Font("Arial", Font.BOLD, 16)); // Tamaño de fuente mayor
+        botonCancelar.setPreferredSize(new Dimension(150, 50)); // Tamaño del botón
+        botonCancelar.setBackground(new Color(220, 20, 60)); // Rojo oscuro
+        botonCancelar.setForeground(Color.WHITE);
+        botonCancelar.setFocusPainted(false);
+        botonCancelar.setBorder(BorderFactory.createRaisedBevelBorder());
+        botonCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ventanaMesa.dispose(); // Cierra la ventana de selección
+            }
+        });
+
+        // Añadir botones al panel
+        panelBotones.add(botonGuardar);
+        panelBotones.add(botonCancelar);
+
+        // Añadir panel de botones al JFrame
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2; // Ocupa 2 columnas
+        gbc.fill = GridBagConstraints.NONE; // No llenar el espacio
+        gbc.anchor = GridBagConstraints.CENTER; // Centrar los botones
+        ventanaMesa.add(panelBotones, gbc);
+
+        // Centrar la ventana en la pantalla
+        ventanaMesa.setLocationRelativeTo(null);
+
+        // Mostrar la ventana
+        ventanaMesa.setVisible(true);
+    }
+   
+
+    
     private void agregarProductoATabla(String producto) {
         // Obtener el precio del producto
         String precioString = obtenerPrecioProducto(producto);
@@ -471,11 +612,19 @@ public class menu_opciones extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
     private int contadorMesas = 1;
     private void guardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarActionPerformed
-
+        mostrarVentanaSeleccionMesa();
+    }//GEN-LAST:event_guardarActionPerformed
+    private void guardarPedidos(String mesaSeleccionada) {
+      
         DefaultTableModel model = (DefaultTableModel) tabla_pedidos.getModel();
-        String mesaSeleccionada = "Mesa " + (mesaCounter + 1);
 
         if (mesaSeleccionada != null) {
+            // Verificar si la mesa ya tiene pedidos guardados
+            if (pedidosPorMesa.containsKey(mesaSeleccionada)) {
+                JOptionPane.showMessageDialog(this, "La mesa " + mesaSeleccionada + " ya está ocupada. Por favor, elija otra mesa.", "Mesa Ocupada", JOptionPane.WARNING_MESSAGE);
+                return; // Salir del método si la mesa ya está ocupada
+            }
+
             ArrayList<String[]> pedidos = new ArrayList<>();
             for (int i = 0; i < model.getRowCount(); i++) {
                 try {
@@ -499,19 +648,11 @@ public class menu_opciones extends javax.swing.JFrame {
 
             // Limpiar la tabla después de guardar
             model.setRowCount(0);
-            mesaCounter++; // Incrementar el contador para la próxima mesa
-            actualizarComboBoxMesas(); // Actualizar el JComboBox con las mesas actuales
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione una mesa para guardar los pedidos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
 
-         
-
-
-    
-    }//GEN-LAST:event_guardarActionPerformed
-    
-    
     private void eliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarActionPerformed
        DefaultTableModel model = (DefaultTableModel) tabla_pedidos.getModel();
         int selectedRow = tabla_pedidos.getSelectedRow();
