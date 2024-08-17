@@ -46,6 +46,8 @@ import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 
 public class menu_opciones extends javax.swing.JFrame {
@@ -73,14 +75,14 @@ public class menu_opciones extends javax.swing.JFrame {
     private final Border border = new LineBorder(java.awt.Color.BLACK, 1);
 
     public menu_opciones() {
-         initComponents();
+        initComponents();
 
         Lista_Productos.setBorder(border);
-        
+
         pedidosPorMesa = new HashMap<>();
         mesaComboBox = new JComboBox<>();
         actualizarComboBoxMesas();
-     
+
         TableColumnModel columnModel = tabla_pedidos.getColumnModel();
         if (columnModel.getColumnCount() > 0) {
             columnModel.getColumn(0).setMinWidth(20);
@@ -88,7 +90,6 @@ public class menu_opciones extends javax.swing.JFrame {
             columnModel.getColumn(2).setMinWidth(50);
             columnModel.getColumn(2).setMaxWidth(60);
         }
-        
         DefaultListModel<String> modelo = new DefaultListModel<>();
         this.Lista_Productos.setModel(modelo);
 
@@ -111,55 +112,34 @@ public class menu_opciones extends javax.swing.JFrame {
         });
        
     }
-    /*private void mostrarVentanaSeleccionMesa() {
-        // Crear el JFrame
-        JFrame ventanaMesa = new JFrame("Seleccionar Mesa");
-        ventanaMesa.setSize(300, 150);
-        ventanaMesa.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        ventanaMesa.setLayout(new BorderLayout());
+    private void ajustarColumnasTablaPedidos() {
+        TableColumnModel columnModel = tabla_pedidos.getColumnModel();
 
-        // Crear el JComboBox con las mesas
-        JComboBox<String> comboMesas = new JComboBox<>();
-        for (int i = 1; i <= 8; i++) {
-            comboMesas.addItem("Mesa " + i);
+        for (int column = 0; column < columnModel.getColumnCount(); column++) {
+            TableColumn tableColumn = columnModel.getColumn(column);
+            int maxWidth = tableColumn.getMaxWidth(); // Obtiene el ancho máximo de la columna
+
+            // Inicializa el ancho preferido de la columna
+            int preferredWidth = tableColumn.getMinWidth();
+
+            for (int row = 0; row < tabla_pedidos.getRowCount(); row++) {
+                TableCellRenderer cellRenderer = tabla_pedidos.getCellRenderer(row, column);
+                Component comp = tabla_pedidos.prepareRenderer(cellRenderer, row, column);
+
+                // Obtiene el ancho preferido del componente
+                int cellWidth = comp.getPreferredSize().width;
+
+                // Actualiza el ancho preferido si es mayor que el actual
+                preferredWidth = Math.max(preferredWidth, cellWidth);
+            }
+
+            // Asegura que el ancho preferido no supere el ancho máximo
+            preferredWidth = Math.min(preferredWidth, maxWidth);
+
+            // Establece el ancho preferido de la columna
+            tableColumn.setPreferredWidth(preferredWidth);
         }
-
-        // Crear el panel para los botones
-        JPanel panelBotones = new JPanel();
-        panelBotones.setLayout(new FlowLayout());
-
-        // Crear el botón Guardar
-        JButton botonGuardar = new JButton("Guardar");
-        botonGuardar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String mesaSeleccionada = (String) comboMesas.getSelectedItem();
-                guardarPedidos(mesaSeleccionada);
-                ventanaMesa.dispose(); // Cierra la ventana de selección
-            }
-        });
-
-        // Crear el botón Cancelar
-        JButton botonCancelar = new JButton("Cancelar");
-        botonCancelar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ventanaMesa.dispose(); // Cierra la ventana de selección
-            }
-        });
-
-        // Añadir componentes al panel y al JFrame
-        panelBotones.add(botonGuardar);
-        panelBotones.add(botonCancelar);
-        ventanaMesa.add(comboMesas, BorderLayout.CENTER);
-        ventanaMesa.add(panelBotones, BorderLayout.SOUTH);
-
-        // Centrar la ventana en la pantalla
-        ventanaMesa.setLocationRelativeTo(null);
-
-        // Mostrar la ventana
-        ventanaMesa.setVisible(true);
-    }*/
+    }
     private void mostrarVentanaSeleccionMesa() {
         JFrame ventanaMesa = new JFrame("Seleccionar Mesa");
         ventanaMesa.setSize(350, 200); // Aumentar tamaño de la ventana
@@ -234,14 +214,24 @@ public class menu_opciones extends javax.swing.JFrame {
 
         // Mostrar la ventana
         ventanaMesa.setVisible(true);
+        
     }
-   
 
-    
     private void agregarProductoATabla(String producto) {
-        // Obtener el precio del producto
         String precioString = obtenerPrecioProducto(producto);
-        BigDecimal precio = new BigDecimal(precioString).setScale(2, RoundingMode.HALF_UP);
+
+        // Mensaje de depuración para mostrar el valor del precio
+        System.out.println("Precio obtenido: " + precioString);
+
+        BigDecimal precio;
+        try {
+            // Asegúrate de que el formato del precio sea correcto (reemplazar comas por puntos, etc.)
+            precioString = precioString.replace(",", ".").trim(); // Reemplazar comas por puntos y eliminar espacios
+            precio = new BigDecimal(precioString).setScale(2, RoundingMode.HALF_UP);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Error al obtener el precio del producto. Verifique el formato del precio: " + precioString, "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         // Crear un nuevo modelo de tabla si no existe
         DefaultTableModel modelo = (DefaultTableModel) tabla_pedidos.getModel();
@@ -261,11 +251,28 @@ public class menu_opciones extends javax.swing.JFrame {
 
         if (productoExiste) {
             // Actualizar la cantidad y el precio si el producto ya existe en la tabla
-            int cantidadActual = (int) modelo.getValueAt(filaExistente, 0);
-            BigDecimal precioActual = (BigDecimal) modelo.getValueAt(filaExistente, 2);
-            BigDecimal nuevoTotal = precioActual.add(precio);
+            int cantidadActual;
+            BigDecimal precioActual;
+            try {
+                cantidadActual = (int) modelo.getValueAt(filaExistente, 0);
+                Object precioObj = modelo.getValueAt(filaExistente, 2);
+
+                // Verificar el tipo de precio y convertir si es necesario
+                if (precioObj instanceof BigDecimal) {
+                    precioActual = (BigDecimal) precioObj;
+                } else if (precioObj instanceof Number) {
+                    precioActual = new BigDecimal(((Number) precioObj).toString()).setScale(2, RoundingMode.HALF_UP);
+                } else {
+                    throw new ClassCastException("Tipo de dato inesperado para el precio.");
+                }
+            } catch (ClassCastException e) {
+                JOptionPane.showMessageDialog(this, "Error al procesar la fila del producto existente. Verifique los datos en la tabla.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Actualizar cantidad y precio
             modelo.setValueAt(cantidadActual + 1, filaExistente, 0); // Incrementar cantidad
-            modelo.setValueAt(nuevoTotal, filaExistente, 2); // Actualizar precio total
+            modelo.setValueAt(precioActual.add(precio), filaExistente, 2); // Actualizar precio total
         } else {
             // Agregar nuevo producto a la tabla
             modelo.addRow(new Object[]{
@@ -274,12 +281,11 @@ public class menu_opciones extends javax.swing.JFrame {
                 precio // Precio
             });
         }
-        
-        this.Lista_Productos.clearSelection();
-        
-        
 
+        // Limpiar la selección de la lista de productos
+        Lista_Productos.clearSelection();
     }
+
     public HashMap<String, ArrayList<String[]>> getPedidosPorMesa() {
         return pedidosPorMesa;
     }
@@ -323,7 +329,6 @@ public class menu_opciones extends javax.swing.JFrame {
         return precio;
     }
 
-   
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -554,6 +559,12 @@ public class menu_opciones extends javax.swing.JFrame {
         jLabel4.setText("Pedidos");
         jPanel2.add(jLabel4);
         jLabel4.setBounds(10, 0, 170, 30);
+
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
         jPanel2.add(jTextField1);
         jTextField1.setBounds(160, 30, 200, 30);
 
@@ -561,6 +572,11 @@ public class menu_opciones extends javax.swing.JFrame {
         btn_buscar.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         btn_buscar.setForeground(new java.awt.Color(255, 255, 255));
         btn_buscar.setText("Buscar");
+        btn_buscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_buscarActionPerformed(evt);
+            }
+        });
         jPanel2.add(btn_buscar);
         btn_buscar.setBounds(10, 30, 140, 30);
 
@@ -610,31 +626,36 @@ public class menu_opciones extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         AgregarLista("10");
     }//GEN-LAST:event_jButton2ActionPerformed
-    private int contadorMesas = 1;
+    //private int contadorMesas = 1;
     private void guardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarActionPerformed
         mostrarVentanaSeleccionMesa();
+        
     }//GEN-LAST:event_guardarActionPerformed
     private void guardarPedidos(String mesaSeleccionada) {
-      
         DefaultTableModel model = (DefaultTableModel) tabla_pedidos.getModel();
 
         if (mesaSeleccionada != null) {
-            // Verificar si la mesa ya tiene pedidos guardados
+            ArrayList<String[]> pedidos = new ArrayList<>();
+
+            // Verificar si la mesa seleccionada ya está ocupada
             if (pedidosPorMesa.containsKey(mesaSeleccionada)) {
-                JOptionPane.showMessageDialog(this, "La mesa " + mesaSeleccionada + " ya está ocupada. Por favor, elija otra mesa.", "Mesa Ocupada", JOptionPane.WARNING_MESSAGE);
-                return; // Salir del método si la mesa ya está ocupada
+                // Mostrar mensaje si la mesa ya está ocupada
+                JOptionPane.showMessageDialog(this,
+                        "La " + mesaSeleccionada + " ya está ocupada.",
+                        "Mesa Ocupada",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
             }
 
-            ArrayList<String[]> pedidos = new ArrayList<>();
+            // Agregar los nuevos pedidos a la lista
             for (int i = 0; i < model.getRowCount(); i++) {
                 try {
-                    // Extraer valores de cada columna de la fila actual
                     String cantidad = String.valueOf(model.getValueAt(i, 0)); // Cantidad en la primera columna
                     String producto = (String) model.getValueAt(i, 1);
                     String precio = String.valueOf(model.getValueAt(i, 2));
                     String estado = "Pendiente"; // Estado inicial
 
-                    // Añadir el pedido a la lista
+                    // Añadir el nuevo pedido a la lista de pedidos
                     pedidos.add(new String[]{mesaSeleccionada, producto, cantidad, precio, estado});
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(this, "Error al procesar la tabla. Verifique los valores.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -652,9 +673,9 @@ public class menu_opciones extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Seleccione una mesa para guardar los pedidos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    
     private void eliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarActionPerformed
-       DefaultTableModel model = (DefaultTableModel) tabla_pedidos.getModel();
+        DefaultTableModel model = (DefaultTableModel) tabla_pedidos.getModel();
         int selectedRow = tabla_pedidos.getSelectedRow();
         if (selectedRow >= 0) {
             model.removeRow(selectedRow);
@@ -662,12 +683,65 @@ public class menu_opciones extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Selecciona una fila para eliminar.");
         }
     }//GEN-LAST:event_eliminarActionPerformed
+    private void actualizarComboMesas() {
+        comboBoxMesas.removeAllItems(); // Limpiar el JComboBox
 
+        for (int i = 1; i <= 8; i++) {
+            String mesa = "Mesa " + i;
+            String estado = pedidosPorMesa.containsKey(mesa) ? "Ocupada" : "Disponible";
+            comboBoxMesas.addItem(mesa + " - " + estado);
+        }
+    }
     private void limpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_limpiarActionPerformed
        DefaultTableModel model = (DefaultTableModel) tabla_pedidos.getModel();
         model.setRowCount(0);
     }//GEN-LAST:event_limpiarActionPerformed
-   private void mostrarPedidosEnTabla(String mesa) {
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+         btn_buscarActionPerformed(evt);
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void btn_buscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_buscarActionPerformed
+         String mesaSeleccionada = jTextField1.getText().trim();
+
+        if (!mesaSeleccionada.isEmpty()) {
+            // Mostrar los productos de la mesa seleccionada
+            mostrarProductosEnMesa(mesaSeleccionada);
+        } else {
+            JOptionPane.showMessageDialog(this, "Por favor, introduzca una mesa.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btn_buscarActionPerformed
+    private void mostrarProductosEnMesa(String mesaSeleccionada) { 
+        DefaultTableModel model = (DefaultTableModel) tabla_pedidos.getModel();
+
+        // Limpiar la tabla actual
+        model.setRowCount(0);
+        model.setColumnIdentifiers(new Object[]{"#", "Producto", "Precio"});
+
+        if (pedidosPorMesa.containsKey(mesaSeleccionada)) {
+            List<String[]> pedidos = pedidosPorMesa.get(mesaSeleccionada);
+            for (String[] pedido : pedidos) {
+                // Verifica el formato esperado de los datos
+                if (pedido.length >= 4) {
+                    try {
+                        int cantidad = Integer.parseInt(pedido[2]);
+                        BigDecimal precio = new BigDecimal(pedido[3]).setScale(2, RoundingMode.HALF_UP);
+                        model.addRow(new Object[]{cantidad, pedido[1], precio});
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(this, "Error en los datos del pedido. Verifique el formato.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "No hay pedidos guardados para la mesa " + mesaSeleccionada, "Sin Pedidos", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        ajustarColumnasTablaPedidos();
+        
+    }
+
+   
+    private void mostrarPedidosEnTabla(String mesa) {
 
         DefaultTableModel model = (DefaultTableModel) tabla_pedidos.getModel();
         model.setRowCount(0); // Limpiar la tabla antes de mostrar los nuevos datos
