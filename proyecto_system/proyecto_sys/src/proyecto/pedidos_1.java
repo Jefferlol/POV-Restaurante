@@ -1,6 +1,7 @@
 
 package proyecto;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -21,6 +22,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
@@ -38,13 +41,71 @@ public class pedidos_1 extends javax.swing.JFrame {
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
         mostrarPedidosEntregados();
         cargarMesasEnComboBox(); 
+        ajustarColumnas();
         //pedidosPorMesa = new HashMap<>();
-       
-        
+        //ESTO ES PARA PODER AJUSTAR LAS COLUMNAS SEGUN EL TAMAÑO DE TEXTO QUE VA ALMACENAR LA CELDA
     }
-     
+    private void ajustarColumnas() {
+        TableColumnModel columnModel = tabla_a.getColumnModel();
+
+        for (int column = 0; column < columnModel.getColumnCount(); column++) {
+            TableColumn tableColumn = columnModel.getColumn(column);
+            int maxWidth = tableColumn.getMaxWidth(); // Obtiene el ancho máximo de la columna
+
+            // Inicializa el ancho preferido de la columna
+            int preferredWidth = tableColumn.getMinWidth();
+
+            for (int row = 0; row < tabla_a.getRowCount(); row++) {
+                TableCellRenderer cellRenderer = tabla_a.getCellRenderer(row, column);
+                Component comp = tabla_a.prepareRenderer(cellRenderer, row, column);
+
+                // Obtiene el ancho preferido del componente
+                int cellWidth = comp.getPreferredSize().width;
+
+                // Actualiza el ancho preferido si es mayor que el actual
+                preferredWidth = Math.max(preferredWidth, cellWidth);
+            }
+
+            // Asegura que el ancho preferido no supere el ancho máximo
+            preferredWidth = Math.min(preferredWidth, maxWidth);
+
+            // Establece el ancho preferido de la columna
+            tableColumn.setPreferredWidth(preferredWidth);
+        }
+    
+    }
+    private void ajustarColumnas_entregado() {
+        TableColumnModel columnModel = Tabla_entregado.getColumnModel();
+
+        for (int column = 0; column < columnModel.getColumnCount(); column++) {
+            TableColumn tableColumn = columnModel.getColumn(column);
+            int maxWidth = tableColumn.getMaxWidth(); // Obtiene el ancho máximo de la columna
+
+            // Inicializa el ancho preferido de la columna
+            int preferredWidth = tableColumn.getMinWidth();
+
+            for (int row = 0; row < Tabla_entregado.getRowCount(); row++) {
+                TableCellRenderer cellRenderer = Tabla_entregado.getCellRenderer(row, column);
+                Component comp = Tabla_entregado.prepareRenderer(cellRenderer, row, column);
+
+                // Obtiene el ancho preferido del componente
+                int cellWidth = comp.getPreferredSize().width;
+
+                // Actualiza el ancho preferido si es mayor que el actual
+                preferredWidth = Math.max(preferredWidth, cellWidth);
+            }
+
+            // Asegura que el ancho preferido no supere el ancho máximo
+            preferredWidth = Math.min(preferredWidth, maxWidth);
+
+            // Establece el ancho preferido de la columna
+            tableColumn.setPreferredWidth(preferredWidth);
+        }
+    
+    }
 
     private void mostrarPedidosEntregados() {
+        
         ArrayList<String[]> pedidosEntregados = new ArrayList<>();
         
 
@@ -61,13 +122,9 @@ public class pedidos_1 extends javax.swing.JFrame {
             modelEntregado.addRow(pedido);
         }
         Tabla_entregado.setModel(modelEntregado);
-        
-        
-        
  
     }
 
-   
     public JPanel getPanelContent() {
        return (JPanel) getContentPane();
     }
@@ -84,7 +141,6 @@ public class pedidos_1 extends javax.swing.JFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         Tabla_entregado = new javax.swing.JTable();
         boton_entregado = new javax.swing.JButton();
-        jLabel8 = new javax.swing.JLabel();
         combo = new javax.swing.JComboBox<>();
         jScrollPane3 = new javax.swing.JScrollPane();
         tabla_a = new javax.swing.JTable();
@@ -106,7 +162,7 @@ public class pedidos_1 extends javax.swing.JFrame {
         jLabel2.setForeground(new java.awt.Color(0, 0, 255));
         jLabel2.setText("Pedido Entregado:");
         jPanel1.add(jLabel2);
-        jLabel2.setBounds(20, 400, 240, 33);
+        jLabel2.setBounds(20, 350, 240, 33);
 
         jLabel5.setBackground(new java.awt.Color(255, 0, 0));
         jLabel5.setFont(new java.awt.Font("Segoe UI", 3, 36)); // NOI18N
@@ -128,7 +184,7 @@ public class pedidos_1 extends javax.swing.JFrame {
         jScrollPane4.setViewportView(Tabla_entregado);
 
         jPanel1.add(jScrollPane4);
-        jScrollPane4.setBounds(190, 440, 680, 210);
+        jScrollPane4.setBounds(180, 390, 680, 280);
 
         boton_entregado.setBackground(new java.awt.Color(255, 255, 51));
         boton_entregado.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
@@ -140,11 +196,7 @@ public class pedidos_1 extends javax.swing.JFrame {
             }
         });
         jPanel1.add(boton_entregado);
-        boton_entregado.setBounds(730, 80, 99, 60);
-
-        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proyecto/103825100-comida-de-restaurante.jpg"))); // NOI18N
-        jPanel1.add(jLabel8);
-        jLabel8.setBounds(250, 240, 480, 480);
+        boton_entregado.setBounds(750, 90, 130, 90);
 
         combo.setBackground(new java.awt.Color(0, 255, 0));
         combo.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
@@ -171,7 +223,7 @@ public class pedidos_1 extends javax.swing.JFrame {
         jScrollPane3.setViewportView(tabla_a);
 
         jPanel1.add(jScrollPane3);
-        jScrollPane3.setBounds(20, 70, 680, 170);
+        jScrollPane3.setBounds(20, 90, 720, 240);
 
         Baucher.setBackground(new java.awt.Color(153, 255, 153));
         Baucher.setText("Baucher");
@@ -181,7 +233,7 @@ public class pedidos_1 extends javax.swing.JFrame {
             }
         });
         jPanel1.add(Baucher);
-        Baucher.setBounds(30, 490, 150, 120);
+        Baucher.setBounds(20, 450, 150, 120);
 
         boton_eliminar.setBackground(new java.awt.Color(255, 255, 51));
         boton_eliminar.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
@@ -193,7 +245,7 @@ public class pedidos_1 extends javax.swing.JFrame {
             }
         });
         jPanel1.add(boton_eliminar);
-        boton_eliminar.setBounds(730, 160, 120, 60);
+        boton_eliminar.setBounds(750, 210, 130, 90);
 
         getContentPane().add(jPanel1);
         jPanel1.setBounds(0, 0, 920, 710);
@@ -484,33 +536,26 @@ public class pedidos_1 extends javax.swing.JFrame {
     }
 
     private void mostrarPedidosEnTabla(String mesa) {
-            ArrayList<String[]> pedidos = pedidosPorMesa.get(mesa);
-
-            TableModel model = new AbstractTableModel() {
-                private String[] columnNames = {"Mesa", "Producto", "Cantidad", "Precio", "Estado"};
-            };
-    
-            TableColumnModel columnModel = tabla_a.getColumnModel();
-            if (model.getColumnCount() > 0) {
-                columnModel.getColumn(0).setMinWidth(30);
-                columnModel.getColumn(0).setMaxWidth(40);
-                columnModel.getColumn(2).setMinWidth(20);
-                columnModel.getColumn(2).setMaxWidth(30);
-                columnModel.getColumn(3).setMinWidth(60);
-                columnModel.getColumn(3).setMaxWidth(70);
-                columnModel.getColumn(4).setMinWidth(60);
-                columnModel.getColumn(4).setMaxWidth(70);
+        ArrayList<String[]> pedidos = pedidosPorMesa.get(mesa);
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Mesa", "Producto", "Cantidad", "Precio", "Estado"}, 0);
+        if (pedidos != null) {
+            for (String[] pedido : pedidos) {
+                model.addRow(pedido);
             }
-            tabla_a.setModel(model);
+        }
+        tabla_a.setModel(model);
+        ajustarColumnas();    // Ajusta el ancho según el contenido inicial
+          // Fija el ancho calculado
+       
         }
 
 
     private void agregarAPedidoNoAtendido(String[] pedido) {
-        /*DefaultTableModel model = (DefaultTableModel) Tabla_entregado.getModel();
-        model.addRow(pedido);*/
-         DefaultTableModel modelEntregado = (DefaultTableModel) Tabla_entregado.getModel();
+       
+        DefaultTableModel modelEntregado = (DefaultTableModel) Tabla_entregado.getModel();
         modelEntregado.addRow(pedido);
         Tabla_entregado.setModel(modelEntregado);
+        ajustarColumnas_entregado();
     }
     /*------------------------------------------------------*/
 
@@ -539,7 +584,6 @@ public class pedidos_1 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
