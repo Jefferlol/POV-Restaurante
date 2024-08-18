@@ -245,16 +245,20 @@ INSERT into Inv_Fijo (Producto_id , Stock_Disponible) values (50,40);-- Cigarros
 INSERT into Inv_Fijo (Producto_id , Stock_Disponible) values (51,40);
 INSERT into Inv_Fijo (Producto_id , Stock_Disponible) values (52,40);
 
-SELECT i.Inv_Fijo_id, p.Producto_nom, i.Stock_Disponible
-FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id where inv_fijo_id = 2;
-SELECT i.Inv_Fijo_id 
-FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id where inv_fijo_id = 2;
-SELECT p.Producto_nom
-FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id where inv_fijo_id = 2;
-SELECT i.Stock_Disponible
-FROM Inv_Fijo i JOIN Productos p ON i.Producto_id = p.Producto_id where inv_fijo_id = 2;
-
+select * from inv_nofijo;
 select * from productos;
+
+
+SELECT i.INV_NOFIJO_ID, p.PRODUCTO_NOM,  i.STOCK_DISPONIBLE 
+FROM INV_NOFIJO i JOIN PRODUCTOS p 
+ON i.PRODUCTO_ID = p.PRODUCTO_ID;
+
+SELECT * INV_NOFIJO
+SELECT i.INV_NOFIJO_ID, p.PRODUCTO_NOM,  p.PRECIO, i.STOCK_DISPONIBLE 
+FROM INV_NOFIJO i JOIN PRODUCTOS p 
+ON i.PRODUCTO_ID = p.PRODUCTO_ID;
+
+UPDATE Inv_NoFijo SET Stock_Disponible = 'N' WHERE Producto_id = 2 AND Stock_Disponible = 'S';
 
 
 

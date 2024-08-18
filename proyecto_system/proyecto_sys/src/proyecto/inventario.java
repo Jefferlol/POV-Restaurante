@@ -18,12 +18,21 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 public class inventario extends javax.swing.JFrame {
     private static final String URL = "jdbc:oracle:thin:@localhost:1521:XE";
-    private static final String USER = "C##WILIAM";
-    private static final String PASSWORD = "system";
+    private static final String USER = "C##Jefferson";
+    private static final String PASSWORD = "Jefferson";
 
    
     public inventario() {
         initComponents();
+        TableColumnModel columnModel = tabla_inventario.getColumnModel();
+        if (columnModel.getColumnCount() > 0) {
+            columnModel.getColumn(0).setMinWidth(40);
+            columnModel.getColumn(0).setMaxWidth(50);
+            columnModel.getColumn(2).setMinWidth(50);
+            columnModel.getColumn(2).setMaxWidth(60);
+            columnModel.getColumn(3).setMinWidth(50);
+            columnModel.getColumn(3).setMaxWidth(60);
+        }
          cargarDatos();
      
     }
@@ -31,9 +40,9 @@ public class inventario extends javax.swing.JFrame {
         DefaultTableModel modelo = (DefaultTableModel) tabla_inventario.getModel();
         modelo.setRowCount(0);
 
-        String query = "SELECT p.PRODUCTO_ID, p.PRODUCTO_NOM, COALESCE(i.STOCK_DISPONIBLE, 0) AS \"Stock Disponible\", p.PRECIO AS Precio "
-                + "FROM PRODUCTOS p "
-                + "LEFT JOIN INV_FIJO i ON p.PRODUCTO_ID = i.PRODUCTO_ID";
+        String query = "SELECT p.Producto_ID, p.PRODUCTO_NOM,  p.PRECIO, i.STOCK_DISPONIBLE \n" +
+                        "FROM INV_NOFIJO i JOIN PRODUCTOS p \n" +
+                        "ON i.PRODUCTO_ID = p.PRODUCTO_ID;";
 
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
@@ -81,6 +90,7 @@ public class inventario extends javax.swing.JFrame {
         jLabel1.setBounds(40, 0, 510, 80);
 
         tabla_inventario.setBackground(new java.awt.Color(204, 204, 255));
+        tabla_inventario.setFont(new java.awt.Font("Cascadia Mono", 0, 18)); // NOI18N
         tabla_inventario.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -90,12 +100,6 @@ public class inventario extends javax.swing.JFrame {
             }
         ));
         jScrollPane1.setViewportView(tabla_inventario);
-        if (tabla_inventario.getColumnModel().getColumnCount() > 0) {
-            tabla_inventario.getColumnModel().getColumn(0).setHeaderValue("ID");
-            tabla_inventario.getColumnModel().getColumn(1).setHeaderValue("Producto");
-            tabla_inventario.getColumnModel().getColumn(2).setHeaderValue("Cantidad");
-            tabla_inventario.getColumnModel().getColumn(3).setHeaderValue("Precio");
-        }
 
         jPanel1.add(jScrollPane1);
         jScrollPane1.setBounds(40, 80, 700, 600);

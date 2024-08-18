@@ -6,14 +6,15 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import javax.swing.table.DefaultTableModel;
 
 
 public class clientes_atendidos extends javax.swing.JFrame {
    
     private static final String URL = "jdbc:oracle:thin:@localhost:1521:XE";
-    private static final String USER = "C##WILIAM";
-    private static final String PASSWORD = "system";
+    private static final String USER = "C##Jefferson";
+    private static final String PASSWORD = "Jefferson";
     
    
 
@@ -49,17 +50,18 @@ public class clientes_atendidos extends javax.swing.JFrame {
         DefaultTableModel modelo = (DefaultTableModel) inv_no_fijo.getModel();
         modelo.setRowCount(0);
 
-        String query = "SELECT i.INV_NOFIJO_ID, p.PRODUCTO_NOM, COALESCE(i.STOCK_DISPONIBLE, 0) AS STOCK_DISPONIBLE "
-                + "FROM INV_NOFIJO i "
-                + "LEFT JOIN PRODUCTOS p ON i.PRODUCTO_ID = p.PRODUCTO_ID";
+        String query = "SELECT i.INV_NOFIJO_ID, p.PRODUCTO_NOM,  p.PRECIO, i.STOCK_DISPONIBLE \n" +
+                        "FROM INV_NOFIJO i JOIN PRODUCTOS p \n" +
+                        "ON i.PRODUCTO_ID = p.PRODUCTO_ID";
 
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Object[] fila = new Object[3];
-                fila[0] = rs.getInt("INV_NOFIJO_ID"); // Usando nombre de columna
+                Object[] fila = new Object[4];
+                fila[0] = rs.getString("INV_NOFIJO_ID"); // Usando nombre de columna
                 fila[1] = rs.getString("PRODUCTO_NOM");
-                fila[2] = rs.getString("STOCK_DISPONIBLE");
+                fila[2] = rs.getString("PRECIO");
+                fila[3] = rs.getString("STOCK_DISPONIBLE");
                 modelo.addRow(fila);
             }
         } catch (SQLException e) {
@@ -147,9 +149,14 @@ public class clientes_atendidos extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Producto", "Stock Disponible", "Estado"
+                "ID", "Producto", "Precio", "Estado"
             }
         ));
+        inv_no_fijo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                inv_no_fijoMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(inv_no_fijo);
 
         jPanel1.add(jScrollPane1);
@@ -157,6 +164,11 @@ public class clientes_atendidos extends javax.swing.JFrame {
 
         rdb_disponible.setFont(new java.awt.Font("Segoe UI", 3, 18)); // NOI18N
         rdb_disponible.setText("DISPONIBLE");
+        rdb_disponible.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdb_disponibleActionPerformed(evt);
+            }
+        });
         jPanel1.add(rdb_disponible);
         rdb_disponible.setBounds(310, 60, 140, 40);
 
@@ -187,8 +199,56 @@ public class clientes_atendidos extends javax.swing.JFrame {
     }//GEN-LAST:event_boton_Cargar_bdActionPerformed
 
     private void rdb_agotadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdb_agotadoActionPerformed
-       
+        this.rdb_disponible.setSelected(false);
+        int filaSeleccionada = inv_no_fijo.getSelectedRow();
+        if (filaSeleccionada != -1) {
+            inv_no_fijo.setValueAt("N",filaSeleccionada, 3);
+            Object valorColumna1 = inv_no_fijo.getValueAt(filaSeleccionada, 0);
+            String valor = valorColumna1.toString();
+            System.out.println(valor);
+            
+            String sql = "UPDATE Inv_NoFijo SET Stock_Disponible = 'N' WHERE Producto_id = "+valor+" AND Stock_Disponible = 'S'";
+            try { CreateBD(sql);} 
+            catch (SQLException e) {
+                e.printStackTrace();
+                }
+        }
     }//GEN-LAST:event_rdb_agotadoActionPerformed
+
+    private void inv_no_fijoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_inv_no_fijoMouseClicked
+        int filaSeleccionada = inv_no_fijo.getSelectedRow();
+
+    // Verificar que se haya seleccionado una fila
+        if (filaSeleccionada != -1) {
+            // Obtener el valor de la columna 4 (índice 3, ya que las columnas son 0-based)
+            Object valorColumna4 = inv_no_fijo.getValueAt(filaSeleccionada, 3);
+            String valor = valorColumna4.toString();
+            if (valor.equals("S")){
+                this.rdb_agotado.setSelected(false);
+                this.rdb_disponible.setSelected(true);
+            }
+            else {this.rdb_agotado.setSelected(true);
+                this.rdb_disponible.setSelected(false);}
+        }
+    }//GEN-LAST:event_inv_no_fijoMouseClicked
+
+    private void rdb_disponibleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdb_disponibleActionPerformed
+        this.rdb_agotado.setSelected(false);
+        int filaSeleccionada = inv_no_fijo.getSelectedRow();
+        if (filaSeleccionada != -1 ) {
+            inv_no_fijo.setValueAt("S",filaSeleccionada, 3);
+            
+            Object valorColumna1 = inv_no_fijo.getValueAt(filaSeleccionada, 0);
+            String valor = valorColumna1.toString();
+            System.out.println(valor);
+            
+            String sql = "UPDATE Inv_NoFijo SET Stock_Disponible = 'S' WHERE Producto_id = "+valor+" AND Stock_Disponible = 'N'";
+            try { CreateBD(sql);} 
+            catch (SQLException e) {
+                e.printStackTrace();
+                }
+        }
+    }//GEN-LAST:event_rdb_disponibleActionPerformed
 
 
     public static void main(String args[]) {
@@ -202,7 +262,35 @@ public class clientes_atendidos extends javax.swing.JFrame {
             }
         });
     }
-
+    public void CreateBD(String sql) throws SQLException {
+                Connection conexion = null;
+                Statement statement = null;
+                try {
+                    conexion = DriverManager.getConnection(URL, USER, PASSWORD);
+                    statement = conexion.createStatement();
+                    int filasAfectadas = statement.executeUpdate(sql);
+                    System.out.println("Filas afectadas: " + filasAfectadas);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    throw e;
+                } finally {
+                    if (statement != null) {
+                        try {
+                            statement.close();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (conexion != null) {
+                        try {
+                            conexion.close();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+ 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton boton_Cargar_bd;

@@ -46,34 +46,22 @@ public class pedidos_1 extends javax.swing.JFrame {
         //ESTO ES PARA PODER AJUSTAR LAS COLUMNAS SEGUN EL TAMAÑO DE TEXTO QUE VA ALMACENAR LA CELDA
     }
     private void ajustarColumnas() {
-        TableColumnModel columnModel = tabla_a.getColumnModel();
+    TableColumnModel columnModel = tabla_a.getColumnModel();
 
-        for (int column = 0; column < columnModel.getColumnCount(); column++) {
-            TableColumn tableColumn = columnModel.getColumn(column);
-            int maxWidth = tableColumn.getMaxWidth(); // Obtiene el ancho máximo de la columna
+    for (int column = 0; column < columnModel.getColumnCount(); column++) {
+        TableColumn tableColumn = columnModel.getColumn(column);
+        int preferredWidth = tableColumn.getMinWidth();
 
-            // Inicializa el ancho preferido de la columna
-            int preferredWidth = tableColumn.getMinWidth();
-
-            for (int row = 0; row < tabla_a.getRowCount(); row++) {
-                TableCellRenderer cellRenderer = tabla_a.getCellRenderer(row, column);
-                Component comp = tabla_a.prepareRenderer(cellRenderer, row, column);
-
-                // Obtiene el ancho preferido del componente
-                int cellWidth = comp.getPreferredSize().width;
-
-                // Actualiza el ancho preferido si es mayor que el actual
-                preferredWidth = Math.max(preferredWidth, cellWidth);
-            }
-
-            // Asegura que el ancho preferido no supere el ancho máximo
-            preferredWidth = Math.min(preferredWidth, maxWidth);
-
-            // Establece el ancho preferido de la columna
-            tableColumn.setPreferredWidth(preferredWidth);
+        for (int row = 0; row < tabla_a.getRowCount(); row++) {
+            TableCellRenderer cellRenderer = tabla_a.getCellRenderer(row, column);
+            Component comp = tabla_a.prepareRenderer(cellRenderer, row, column);
+            preferredWidth = Math.max(preferredWidth, comp.getPreferredSize().width);
         }
-    
+
+        // Establece el ancho preferido de la columna
+        tableColumn.setPreferredWidth(preferredWidth);
     }
+}
     private void ajustarColumnas_entregado() {
         TableColumnModel columnModel = Tabla_entregado.getColumnModel();
 
@@ -105,25 +93,24 @@ public class pedidos_1 extends javax.swing.JFrame {
     }
 
     private void mostrarPedidosEntregados() {
-        
-        ArrayList<String[]> pedidosEntregados = new ArrayList<>();
-        
+    ArrayList<String[]> pedidosEntregados = new ArrayList<>();
 
-        for (ArrayList<String[]> listaPedidos : pedidosPorMesa.values()) {
-            for (String[] pedido : listaPedidos) {
-                if (pedido[4].equals("Entregado")) { // Suponiendo que el estado está en el índice 4
-                    pedidosEntregados.add(pedido);
-                }
+    for (ArrayList<String[]> listaPedidos : pedidosPorMesa.values()) {
+        for (String[] pedido : listaPedidos) {
+            if (pedido[4].equals("Entregado")) {
+                pedidosEntregados.add(pedido);
             }
         }
-        DefaultTableModel modelEntregado = (DefaultTableModel) Tabla_entregado.getModel();
-        modelEntregado.setRowCount(0); // Limpiar la tabla antes de agregar datos
-        for (String[] pedido : pedidosEntregados) {
-            modelEntregado.addRow(pedido);
-        }
-        Tabla_entregado.setModel(modelEntregado);
- 
     }
+
+    DefaultTableModel modelEntregado = (DefaultTableModel) Tabla_entregado.getModel();
+    modelEntregado.setRowCount(0); // Limpiar la tabla antes de agregar datos
+    for (String[] pedido : pedidosEntregados) {
+        modelEntregado.addRow(pedido);
+    }
+    Tabla_entregado.setModel(modelEntregado);
+    ajustarColumnas(); // Ajustar columnas después de llenar la tabla
+}
 
     public JPanel getPanelContent() {
        return (JPanel) getContentPane();
@@ -283,47 +270,52 @@ public class pedidos_1 extends javax.swing.JFrame {
     }//GEN-LAST:event_BaucherActionPerformed
 
     private void boton_eliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_eliminarActionPerformed
-        // Obtener la fila seleccionada
-        int filaSeleccionada = tabla_a.getSelectedRow();
+        tabla_a.requestFocus();
+    
+    // Obtener la fila seleccionada
+    int filaSeleccionada = tabla_a.getSelectedRow();
 
-        if (filaSeleccionada != -1) {
-            // Obtener el modelo de la tabla
-            DefaultTableModel model = (DefaultTableModel) tabla_a.getModel();
+    if (filaSeleccionada != -1) {
+        // Obtener el modelo de la tabla
+        DefaultTableModel model = (DefaultTableModel) tabla_a.getModel();
 
-            // Obtener el valor de la celda en la columna de la mesa
-            String mesaSeleccionada = (String) model.getValueAt(filaSeleccionada, 0);
+        // Obtener el valor de la celda en la columna de la mesa
+        String mesaSeleccionada = (String) model.getValueAt(filaSeleccionada, 0);
 
-            // Obtener el valor de la celda en la columna de estado
-            String estado = (String) model.getValueAt(filaSeleccionada, 4);
+        // Obtener el valor de la celda en la columna de estado
+        String estado = (String) model.getValueAt(filaSeleccionada, 4);
 
-            // Verificar si el estado es "alistando" o "pendiente"
-            if ("alistando".equalsIgnoreCase(estado) || "pendiente".equalsIgnoreCase(estado)) {
-                // Obtener la lista de pedidos para la mesa seleccionada
-                ArrayList<String[]> pedidos = pedidosPorMesa.get(mesaSeleccionada);
-                if (pedidos != null) {
-                    // Eliminar el pedido de la lista
-                    pedidos.remove(filaSeleccionada);
-                    // Actualizar la lista de pedidos en el HashMap
-                    pedidosPorMesa.put(mesaSeleccionada, pedidos);
+        // Verificar si el estado es "alistando" o "pendiente"
+        if ("alistando".equalsIgnoreCase(estado) || "pendiente".equalsIgnoreCase(estado)) {
+            // Obtener la lista de pedidos para la mesa seleccionada
+            ArrayList<String[]> pedidos = pedidosPorMesa.get(mesaSeleccionada);
+            if (pedidos != null) {
+                // Eliminar el pedido de la lista
+                pedidos.remove(filaSeleccionada);
+                // Actualizar la lista de pedidos en el HashMap
+                pedidosPorMesa.put(mesaSeleccionada, pedidos);
 
-                    // Eliminar la fila de la tabla
-                    model.removeRow(filaSeleccionada);
+                // Eliminar la fila de la tabla
+                model.removeRow(filaSeleccionada);
 
-                    // Verificar si la lista de pedidos está vacía y eliminar la mesa del HashMap si es necesario
-                    if (pedidos.isEmpty()) {
-                        pedidosPorMesa.remove(mesaSeleccionada);
-                        cargarMesasEnComboBox(); // Actualizar el JComboBox
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(this, "No se encontraron pedidos para la mesa seleccionada.");
+                // Verificar si la lista de pedidos está vacía y eliminar la mesa del HashMap si es necesario
+                if (pedidos.isEmpty()) {
+                    pedidosPorMesa.remove(mesaSeleccionada);
+                    cargarMesasEnComboBox(); // Actualizar el JComboBox
                 }
+
+                // Refrescar la tabla para asegurar que los cambios se reflejen
+                model.fireTableDataChanged();
+                tabla_a.repaint();
             } else {
-                JOptionPane.showMessageDialog(this, "No se puede eliminar el pedido ya que su estado es " + estado + ".");
+                JOptionPane.showMessageDialog(this, "No se encontraron pedidos para la mesa seleccionada.");
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Por favor, seleccione un producto para eliminar.");
+            JOptionPane.showMessageDialog(this, "No se puede eliminar el pedido ya que su estado es " + estado + ".");
         }
-        
+    } else {
+        JOptionPane.showMessageDialog(this, "Por favor, seleccione un producto para eliminar.");
+    }
     }//GEN-LAST:event_boton_eliminarActionPerformed
 
     private void generarComprobante() {
@@ -482,9 +474,11 @@ public class pedidos_1 extends javax.swing.JFrame {
 
     }
     private void cambiarEstadoPedido(String estado) {
+        
         String mesaSeleccionada = (String) combo.getSelectedItem();
         if (mesaSeleccionada != null && pedidosPorMesa.containsKey(mesaSeleccionada)) {
             int filaSeleccionada = tabla_a.getSelectedRow();
+            
 
             if (filaSeleccionada != -1) {
                 DefaultTableModel model = (DefaultTableModel) tabla_a.getModel();
@@ -513,9 +507,16 @@ public class pedidos_1 extends javax.swing.JFrame {
 
                 // Actualizar la vista de pedidos para la mesa seleccionada
                 mostrarPedidosEnTabla(mesaSeleccionada);
+                
 
                 // Eliminar el pedido de la tabla general
+                pedidos.remove(filaSeleccionada);
                 model.removeRow(filaSeleccionada);
+                model.fireTableDataChanged();
+
+
+
+                System.out.println("Fila seleccionada: " + filaSeleccionada);
 
                 // Agregar el pedido a la tabla correspondiente
                 switch (estado) {
@@ -526,6 +527,7 @@ public class pedidos_1 extends javax.swing.JFrame {
                         agregarAPedidoNoAtendido(pedido);
                         break;
                 }
+                
             } else {
                 JOptionPane.showMessageDialog(null, "Selecciona un producto para cambiar su estado.");
             }
@@ -557,6 +559,8 @@ public class pedidos_1 extends javax.swing.JFrame {
         Tabla_entregado.setModel(modelEntregado);
         ajustarColumnas_entregado();
     }
+    
+    
     /*------------------------------------------------------*/
 
     public static void main(String[] args) {

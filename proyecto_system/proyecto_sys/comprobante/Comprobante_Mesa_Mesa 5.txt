@@ -1,26 +1,27 @@
             ***********************
                      Restobar           
                Comprobante de Pedido   
-                     Mesa: Mesa 2
+                     Mesa: Mesa 5
             ***********************
            
 Ruc: 10730425878           
 Dirección: Perulandia - referencia 2 cuadras
-Fecha y Hora de generación: 16/08/2024 20:36:30
+Fecha y Hora de generación: 16/08/2024 20:37:09
 Producto                  Cantidad   Precio (S/)
 ------------------------------------------------------------
-H. Clasica                2          S/ 20.00  
-H. Hawaiana con Carne     2          S/ 30.00  
-H. Hawaiana con Filete de Pollo 2          S/ 30.00  
-H. Parrillera             1          S/ 16.00  
-H. Royal                  1          S/ 15.00  
-H. Queso Tocino           1          S/ 14.00  
+H. Pollo Deshilachado     2          S/ 16.00  
+H. Queso Tocino           2          S/ 28.00  
+H. Hawaiana con Carne     4          S/ 60.00  
+H. Royal                  3          S/ 45.00  
+H. Parrillera             3          S/ 48.00  
 H. Cheese                 1          S/ 12.00  
+H. Clasica                4          S/ 40.00  
+H. Hawaiana con Filete de Pollo 1          S/ 15.00  
 ------------------------------------------------------------
             
-Subtotal (S/):                      S/ 112.34 
-IGV (18%) (S/):                     S/ 24.66  
-Total (S/):                         S/ 137.00 
+Subtotal (S/):                      S/ 216.48 
+IGV (18%) (S/):                     S/ 47.52  
+Total (S/):                         S/ 264.00 
 
 
              
