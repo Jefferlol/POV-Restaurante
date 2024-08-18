@@ -207,7 +207,7 @@ public class clientes_atendidos extends javax.swing.JFrame {
             String valor = valorColumna1.toString();
             System.out.println(valor);
             
-            String sql = "UPDATE Inv_NoFijo SET Stock_Disponible = 'N' WHERE Producto_id = "+valor+" AND Stock_Disponible = 'S'";
+            String sql = "UPDATE Inv_NoFijo SET Stock_Disponible = 'N' WHERE inv_nofijo_id = "+valor+" AND Stock_Disponible = 'S'";
             try { CreateBD(sql);} 
             catch (SQLException e) {
                 e.printStackTrace();
@@ -242,7 +242,7 @@ public class clientes_atendidos extends javax.swing.JFrame {
             String valor = valorColumna1.toString();
             System.out.println(valor);
             
-            String sql = "UPDATE Inv_NoFijo SET Stock_Disponible = 'S' WHERE Producto_id = "+valor+" AND Stock_Disponible = 'N'";
+            String sql = "UPDATE Inv_NoFijo SET Stock_Disponible = 'S' WHERE inv_nofijo_id = "+valor+" AND Stock_Disponible = 'N'";
             try { CreateBD(sql);} 
             catch (SQLException e) {
                 e.printStackTrace();

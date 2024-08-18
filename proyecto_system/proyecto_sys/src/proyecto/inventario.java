@@ -28,35 +28,37 @@ public class inventario extends javax.swing.JFrame {
         if (columnModel.getColumnCount() > 0) {
             columnModel.getColumn(0).setMinWidth(40);
             columnModel.getColumn(0).setMaxWidth(50);
-            columnModel.getColumn(2).setMinWidth(50);
-            columnModel.getColumn(2).setMaxWidth(60);
-            columnModel.getColumn(3).setMinWidth(50);
-            columnModel.getColumn(3).setMaxWidth(60);
+            columnModel.getColumn(2).setMinWidth(100);
+            columnModel.getColumn(2).setMaxWidth(110);
+            columnModel.getColumn(3).setMinWidth(100);
+            columnModel.getColumn(3).setMaxWidth(110);
         }
          cargarDatos();
      
     }
     private void cargarDatos() {
-        DefaultTableModel modelo = (DefaultTableModel) tabla_inventario.getModel();
+         DefaultTableModel modelo = (DefaultTableModel) tabla_inventario.getModel();
         modelo.setRowCount(0);
 
-        String query = "SELECT p.Producto_ID, p.PRODUCTO_NOM,  p.PRECIO, i.STOCK_DISPONIBLE \n" +
-                        "FROM INV_NOFIJO i JOIN PRODUCTOS p \n" +
-                        "ON i.PRODUCTO_ID = p.PRODUCTO_ID;";
+        String query = "SELECT p.Producto_ID, p.PRODUCTO_NOM,  p.PRECIO, i.STOCK_DISPONIBLE FROM INV_FIJO i JOIN PRODUCTOS p ON i.PRODUCTO_ID = p.PRODUCTO_ID";
 
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD); PreparedStatement stmt = conn.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 Object[] fila = new Object[4];
                 fila[0] = rs.getInt("PRODUCTO_ID");
                 fila[1] = rs.getString("PRODUCTO_NOM");
-                fila[2] = rs.getInt("Stock Disponible"); // Cambiado a "Stock Disponible"
-                fila[3] = rs.getDouble("Precio"); // Cambiado a "Precio"
+                fila[2] = rs.getDouble("PRECIO");  // Ajustado a mayúsculas para coincidir con la consulta
+                fila[3] = rs.getInt("STOCK_DISPONIBLE"); // Ajustado a mayúsculas para coincidir con la consulta
+
                 modelo.addRow(fila);
-            }
-        } catch (SQLException e) {
+            }} 
+        catch (SQLException e) {
             e.printStackTrace();
-        }
+            // Considera agregar una notificación al usuario aquí
+            }
     }
   
 
